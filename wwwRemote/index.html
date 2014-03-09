@@ -1,0 +1,82 @@
+<html><body><br />
+<span id="result"></span>
+<script src="virtualjoystick.js"></script>
+<script>
+
+	var etatWs;
+	var msgWs;
+
+	if ('WebSocket' in window)
+	{
+		var socket = new WebSocket("ws://192.168.1.252:3842/");
+
+		socket.onopen = function() {
+			etatWs = 'ouvert';
+			socket.send("CLIENT");
+		};
+
+		socket.onmessage = function (evt) {
+			msgWs = evt.data;
+		};
+
+		socket.onclose = function() {
+			etatWs = 'ferme';
+		};
+
+		socket.onerror = function(err) {
+			etatWs = 'erreur' + err;
+		};
+	}
+	else
+	{
+		alert("Websocket non supporte (kill IE)");
+
+		/*WebSockets are not supported. Try a fallback method like long-polling etc*/
+	}
+ 
+	// INIT joystick
+	var joystick1	= new VirtualJoystick({
+		container	: document.body,
+		strokeStyle	: 'cyan',
+		limitStickTravel: true,
+		stickRadius	: 85		
+	});
+	joystick1.addEventListener('touchStartValidation', function(event){
+		var touch	= event.changedTouches[0];
+		if( touch.pageX < window.innerWidth/2 )	return false;
+		return true
+	});
+	var joystick2	= new VirtualJoystick({
+		container	: document.body,
+		strokeStyle	: 'orange',
+		limitStickTravel: true,
+		stickRadius	: 85		
+	});
+	joystick2.addEventListener('touchStartValidation', function(event){
+		var touch	= event.changedTouches[0];
+		if( touch.pageX >= window.innerWidth/2 )	return false;
+		return true
+	});
+
+	// Routine toute les ms
+
+	setInterval(function(){
+		var outputEl	= document.getElementById('result');
+		outputEl.innerHTML	= '<b>etat WS:</b> ' + etatWs + '<br />'
+			+ '<b>msg WS:</b> ' + msgWs + '<br />'
+			+ '<b>touch:</b> ' + VirtualJoystick.touchScreenAvailable() + '<br />'
+			+ '<b>Joystick1:</b> '
+			+ ' dx:'+ (Math.round( joystick1.deltaX() ) * 3)
+			+ ' dy:'+ (Math.round( joystick1.deltaY() ) * 3)
+			+ '<br /><b>Joystick2:</b> '
+			+ ' dx:'+ (Math.round( joystick2.deltaX() ) * 3)
+			+ ' dy:'+ (Math.round( joystick2.deltaY() ) * 3)
+
+		// envoi coord joystick
+		socket.send('xl:' + (Math.round( joystick2.deltaX() ) * 3));
+		socket.send('yl:' + (Math.round( joystick2.deltaY() ) * 3));
+		socket.send('xr:' + (Math.round( joystick1.deltaX() ) * 3));
+		socket.send('yr:' + (Math.round( joystick1.deltaY() ) * 3));
+	}, 1/20 * 1000);
+</script></body>
+</html>
