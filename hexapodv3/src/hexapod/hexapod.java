@@ -20,6 +20,8 @@ public class hexapod {
     	
     	int choix = sc.nextInt();
     	
+    	sc.close();
+    	
     	if(choix != 2) {
 	    	// create gpio controller
 	        final GpioController gpio = GpioFactory.getInstance();
@@ -30,7 +32,7 @@ public class hexapod {
         
     	if(choix != 1) {
 	        // Init serveur websocket
-	        WebSocketRobot jetty = new WebSocketRobot() ;
+	        WebSocketRobot jetty = new WebSocketRobot();
 	        jetty.start();
     	}
     }

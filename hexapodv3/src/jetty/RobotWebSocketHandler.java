@@ -49,8 +49,29 @@ public class RobotWebSocketHandler {
     	}
     	
     	// TODO : switch case
-    	
-    	Robot.getHandle().Mouvement(0, 0, 0);
-    	
+    	if(coord[0] == "xl")
+    	{
+    		// joystick horizontal gauche
+    		Robot.getHandle().MouvementX(Integer.parseInt(coord[1]));
+    	}
+    	else if(coord[0] == "yl")
+    	{
+    		// joystick vertical gauche
+    		Robot.getHandle().MouvementY(Integer.parseInt(coord[1]));
+    	}
+    	else if(coord[0] == "xr")
+    	{
+    		// joystick horizontal droit
+    		//Robot.getHandle().Mouvement?(Integer.parseInt(coord[1]));
+    	}
+    	else if(coord[0] == "yr")
+    	{
+    		// joystick vertical droit
+    		Robot.getHandle().MouvementZ(Integer.parseInt(coord[1]));
+    	}
+    	else
+    	{
+    		System.out.println("La donnee recu n'est pas un mouvement correct");
+    	}
     }
 }

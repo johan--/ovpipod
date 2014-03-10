@@ -23,7 +23,7 @@ public class Robot {
     
     private final GpioPinDigitalOutput modeBasc;
     
-    // Définition des pattes pour un Hexapod
+    // Definition des pattes pour un Hexapod
     private Patte front_left;
     private Patte front_right;
     private Patte middle_left;
@@ -65,16 +65,19 @@ public class Robot {
     	return handle;
     }
     
-    public void Mouvement(int x_ws, int y_ws, int z_ws) {
-        // X : axe vertical joystick gauche
-        // Y : axe horizontal joystick gauche
-        // Z : axe horizontal joystick droit
-    	
+    public void MouvementX(int x_ws) {
+    	// X : axe vertical joystick gauche
     	x = x_ws;
-    	y = y_ws;
-    	z = z_ws;
     }
-
     
+    public void MouvementY(int y_ws) {
+    	// Y : axe horizontal joystick gauche
+    	y = y_ws;
+    }
+    
+    public void MouvementZ(int z_ws) {
+    	// Z : axe horizontal joystick droit
+    	z = z_ws;
+    }    
     
 }
