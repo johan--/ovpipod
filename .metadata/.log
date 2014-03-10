@@ -65,3 +65,39 @@ Binding(ALT+ARROW_UP,
 		,,true),null),
 	org.eclipse.ui.defaultAcceleratorConfiguration,
 	org.eclipse.mylyn.tasks.ui.views.tasks,,,system)
+!SESSION 2014-03-10 19:11:32.694 -----------------------------------------------
+eclipse.buildId=4.3.0.M20130911-1000
+java.version=1.7.0_45
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=fr_FR
+Framework arguments:  -product org.eclipse.epp.package.standard.product -keyring /Users/jhergault/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.standard.product -keyring /Users/jhergault/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2014-03-10 19:11:49.150
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY org.eclipse.tcf 4 0 2014-03-10 19:18:18.300
+!MESSAGE Cannot send datagram packet to /192.168.1.255
+!STACK 0
+java.io.IOException: Network is down
+	at java.net.PlainDatagramSocketImpl.send(Native Method)
+	at java.net.DatagramSocket.send(DatagramSocket.java:676)
+	at org.eclipse.tcf.internal.services.local.LocatorService.sendDatagramPacket(LocatorService.java:805)
+	at org.eclipse.tcf.internal.services.local.LocatorService.sendEmptyPacket(LocatorService.java:923)
+	at org.eclipse.tcf.internal.services.local.LocatorService.sendAll(LocatorService.java:933)
+	at org.eclipse.tcf.internal.services.local.LocatorService.refresh_timer(LocatorService.java:548)
+	at org.eclipse.tcf.internal.services.local.LocatorService.access$1(LocatorService.java:500)
+	at org.eclipse.tcf.internal.services.local.LocatorService$1$1.run(LocatorService.java:185)
+	at org.eclipse.tcf.protocol.Protocol$3.run(Protocol.java:209)
+	at org.eclipse.tcf.EventQueue.run(EventQueue.java:95)
+	at java.lang.Thread.run(Thread.java:744)
+!SESSION 2014-03-10 20:35:33.321 -----------------------------------------------
+eclipse.buildId=4.3.0.M20130911-1000
+java.version=1.7.0_45
+java.vendor=Oracle Corporation
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=fr_FR
+Framework arguments:  -product org.eclipse.epp.package.standard.product -keyring /Users/jhergault/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.standard.product -keyring /Users/jhergault/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2014-03-10 20:35:38.949
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences

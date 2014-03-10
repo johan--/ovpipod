@@ -53,19 +53,6 @@ public class Robot {
         back_left = new Patte(liaisonRS232, (char)7, (char)9, (char)11);
         back_right = new Patte(liaisonRS232, (char)8, (char)10, (char)12);
         
-        // Init Servomoteurs
-        try {
-			front_left.setPosAll((char)52, (char)-118, (char)97);
-			front_right.setPosAll((char)52, (char)118, (char)97);
-	        middle_left.setPosAll((char)0, (char)-118, (char)97);
-	        middle_right.setPosAll((char)0, (char)118, (char)97);
-	        back_left.setPosAll((char)-52, (char)-118, (char)97);
-	        back_right.setPosAll((char)-52, (char)118, (char)97);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
         // Valeurs temporaires
         minHauteurPatte = 10;   // Defini hauteur de la base hexapod
         maxHauteurPatte = 14;   // Defini hauteur montee des pattes lors du mouvement

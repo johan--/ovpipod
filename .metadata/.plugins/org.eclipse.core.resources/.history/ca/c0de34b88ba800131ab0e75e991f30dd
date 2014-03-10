@@ -16,28 +16,15 @@ public class Patte {
             servoCoxa = new AX12(liaison, IDCoxa);
             servoFemur = new AX12(liaison, IDFemur);
             servoTibia = new AX12(liaison, IDTibia);
+            
+            // Init servomoteurs
+            servoCoxa.setPosition((char)512);
+            servoFemur.setPosition((char)512);
+            servoTibia.setPosition((char)512);
         }
         catch(Exception e) {
             System.out.println(e.getMessage());
         }
-    }
-    
-    public void setPosAll(char PosCoxa, char PosFemur, char PosTibia) throws Exception {
-    	setPosCoxa(PosCoxa);
-    	setPosFemur(PosFemur);
-    	setPosTibia(PosTibia);
-    }
-    
-    public void setPosCoxa(char position) throws Exception {
-    	servoCoxa.setPosition(position);
-    }
-    
-    public void setPosFemur(char position) throws Exception {
-    	servoFemur.setPosition(position);
-    }
-    
-    public void setPosTibia(char position) throws Exception {
-    	servoTibia.setPosition(position);
     }
     
     

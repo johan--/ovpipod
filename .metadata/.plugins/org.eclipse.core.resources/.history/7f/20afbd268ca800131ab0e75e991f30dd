@@ -22,12 +22,6 @@ public class Patte {
         }
     }
     
-    public void setPosAll(char PosCoxa, char PosFemur, char PosTibia) throws Exception {
-    	setPosCoxa(PosCoxa);
-    	setPosFemur(PosFemur);
-    	setPosTibia(PosTibia);
-    }
-    
     public void setPosCoxa(char position) throws Exception {
     	servoCoxa.setPosition(position);
     }
