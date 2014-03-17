@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring accessors="true" comment="Delete element from project &apos;hexapodv3&apos;&#x0A;- Original project: &apos;hexapodv3&apos;&#x0A;- Original element: &apos;SerialRPi_WPi.java_old&apos;" description="Delete element" element1="src/stdrpi/SerialRPi_WPi.java_old" elements="0" flags="589830" id="org.eclipse.jdt.ui.delete" resources="1" stamp="1394472745131" subPackages="false" version="1.0"/>
-</session>
