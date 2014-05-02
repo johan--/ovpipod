@@ -2,8 +2,10 @@ package servomoteur;
 import stdrpi.SerialRPi;
 
 /**
+ * Classe specifique du servomoteur AX12 (heritage avec ServoMoteur)
  *
  * @author Jeremy HERGAULT, Jean-Phillipe HAYES
+ * @version 3.1
  */
 public class AX12 extends ServoMoteur {
     
@@ -33,7 +35,7 @@ public class AX12 extends ServoMoteur {
         data[7] = (char)((angle & 0xFF00) >> 8);		// char mouvement poid fort
         data[8] = CalcCRC(data);						// CRC
         
-        // TODO : verifier
+        // TODO : verifier la trame pour la vitesse progressive
         
         // envoi de la trame
         serialPi.send(data, 9);

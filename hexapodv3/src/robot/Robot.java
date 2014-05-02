@@ -1,10 +1,13 @@
 package robot;
 
 import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
+//import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
+
 import java.lang.Math;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import stdrpi.SerialRPi;
 
@@ -16,9 +19,14 @@ import stdrpi.SerialRPi;
 public class Robot {
 	public static final int STEPMAX = 128;
 	
+	private TimerTask processTask;
+	private Timer timer;
+	private long periodTimer;
+	
     private int minHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont pose
     private int maxHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont leve
-    
+
+    // Valeurs en INT de -255 a 255 des joysticks
     private int x_joy;
     private int y_joy;
     private int z_joy;
@@ -51,7 +59,6 @@ public class Robot {
         try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
@@ -81,21 +88,41 @@ public class Robot {
         
         // Definition de l'handle
         handle = this;
+        
+        // Set du timer d'execution des steps
+        processTask = new TimerTask() {
+	        public void run()
+	        {
+	            System.out.printf("ProcessTask");
+	        }
+        };
+        periodTimer = 100;
+        timer = new Timer();
+        //timer.schedule(new TimerTask(sendDirectionsPattes()), 1000, periodTimer);
     }
     
     /**
-     * Methode cyclique permettant de mettre a jour les pattes (step + 1)
+     * Methode permettant de parametrer le timer par rapport au module des joysticks
      */
-    public void process() {
-    	// TODO : methode appelle toute les ...ms (1step)
+    public void processDirectionRobot() {
+    	long w_periodTimer = 100;
+    	// Set du timer appellant la methode sendDirectionsPattes cycliquement
     	
-    	sendDirectionsPattes();
+    	// TODO : calcul timer
+    	
+    	if(w_periodTimer != periodTimer)
+    	{
+    		periodTimer = w_periodTimer;
+    		timer.cancel();
+    		timer.schedule(processTask, 0, periodTimer);
+    	}
     }
     
     /**
      * Methode cyclique permettant de mettre a jour les pattes (step + 1)
      */
-    private void sendDirectionsPattes() {
+    public void sendDirectionsPattes() {
+    	// TODO : methode appelle toute les ...ms (1step)
     	// Step ==> 0 - 127
     	
     	// Copy pour evite la concurence d'acces
@@ -153,7 +180,7 @@ public class Robot {
     	
     	// TODO : conversion joy ==> directions pattes
     	
-    	// Init Servomoteurs
+    	// Mise a jour des patte !!!NE RIEN FAIRE SI JOY = 0!!!
         try {
 	    	/*front_left.upDateDroiteMov(int angle, int longueur);
 			front_right.upDateDroiteMov(int angle, int longueur);
@@ -167,6 +194,9 @@ public class Robot {
 		}
     }
     
+    /**
+     * Methode permettant d'obtenir une reference sur l'objet unique Robot
+     */
     public static Robot getHandle() {
     	return handle;
     }
@@ -175,30 +205,42 @@ public class Robot {
 	 * Methode permettant de mettre a jour la valeur du joystick gauche sur l'axe horizontal
 	 * 
 	 * @param x_ws
-	 * 			Valeur en int de la position du joystick gauche sur l'axe horizontal
+	 * 			Valeur en int (-255 a 255) de la position du joystick gauche sur l'axe horizontal
 	 */
     public void MouvementX(int x_ws) {
-    	x_joy = x_ws;
+    	if(x_joy != x_ws)
+    	{
+    		x_joy = x_ws;
+    		processDirectionRobot();
+    	}
     }
     
 	/**
 	 * Methode permettant de mettre a jour la valeur du joystick gauche sur l'axe vertical
 	 * 
 	 * @param y_ws
-	 * 			Valeur en int de la position du joystick gauche sur l'axe vertical
+	 * 			Valeur en int (-255 a 255) de la position du joystick gauche sur l'axe vertical
 	 */
     public void MouvementY(int y_ws) {
-    	y_joy = y_ws;
+    	if(y_joy != y_ws)
+    	{
+    		y_joy = y_ws;
+    		processDirectionRobot();
+    	}
     }
 
 	/**
 	 * Methode permettant de mettre a jour la valeur du joystick droit sur l'axe horizontal
 	 * 
 	 * @param z_ws
-	 * 			Valeur en int de la position du joystick droit sur l'axe horizontal
+	 * 			Valeur en int (-255 a 255) de la position du joystick droit sur l'axe horizontal
 	 */
     public void MouvementZ(int z_ws) {
-    	z_joy = z_ws;
+    	if(z_joy != z_ws)
+    	{
+    		z_joy = z_ws;
+    		processDirectionRobot();
+    	}
     }    
     
 }

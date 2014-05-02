@@ -11,8 +11,12 @@ import com.pi4j.io.serial.SerialPortException;
 
 
 /**
+ * Classe SerialRPi genere a partir de la lib pi4j
+ * http://pi4j.com/example/serial.html
+ * Librairie modifie pour accepter une liaison serie de 1Mbit/s
  *
  * @author Jeremy HERGAULT, Jean-Phillipe HAYES
+ * @version 3.1
  */
 public class SerialRPi {
     private final Serial serialPi;
@@ -48,8 +52,15 @@ public class SerialRPi {
         else
         	System.out.println("KO.");
     }
-    
-    // Fonction pour envoyer un tableau de char
+
+    /**
+     * Methode permettant d'envoyer un tableau de char
+     *
+     * @param data
+     * 			Tableau de char
+     * @param lenght
+     * 			Nombre d'octets a envoyer (taille du tableau de char)
+     */
     public void send(char data[], int lenght) {
     	if(serialPi.isOpen()) {
     		for(int i = 0; i < lenght; i++) {
@@ -68,9 +79,4 @@ public class SerialRPi {
 			e.printStackTrace();
 		}*/
     }
-    
-
-    
-    
-    
 }

@@ -2,8 +2,10 @@ package servomoteur;
 import stdrpi.SerialRPi;
 
 /**
+ * Classe generalise de servomoteur controle par des trames serie
  *
  * @author Jeremy HERGAULT, Jean-Phillipe HAYES
+ * @version 3.1
  */
 public abstract class ServoMoteur {
     protected SerialRPi serialPi;
