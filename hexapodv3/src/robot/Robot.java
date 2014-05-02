@@ -9,24 +9,23 @@ import java.lang.Math;
 import stdrpi.SerialRPi;
 
 /**
+ * Classe Robot representant l'hexapod associant 6 objects Patte
  *
- * @author jhergault
+ * @author Jeremy HERGAULT, Jean-Phillipe HAYES
  */
 public class Robot {
 	public static final int STEPMAX = 128;
 	
-    private int minHauteurPatte;
-    private int maxHauteurPatte;
+    private int minHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont pose
+    private int maxHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont leve
     
-    private int x;
-    private int y;
-    private int z;
-    
-    private int step;
+    private int x_joy;
+    private int y_joy;
+    private int z_joy;
     
     private static Robot handle;
     
-    private final GpioPinDigitalOutput modeBasc;
+    //private final GpioPinDigitalOutput modeBasc;
     
     // Definition des pattes pour un Hexapod
     private Patte front_left;
@@ -36,12 +35,18 @@ public class Robot {
     private Patte back_left;
     private Patte back_right;
     
+    /**
+     * Constructeur de l'objet robot representant un ensemble de pattes
+     * 
+     * @param gpioRPi
+     * 				Object permettant la manipulation du GPIO du Raspberry Pi
+     */
     public Robot(GpioController gpioRPi) {
         // Ouverture COM serie avant creation des pattes
         SerialRPi liaisonRS232 = new SerialRPi();
         
         // Positionnement bascule mode emission
-        modeBasc = gpioRPi.provisionDigitalOutputPin(RaspiPin.GPIO_01, PinState.HIGH);
+        /*modeBasc = */gpioRPi.provisionDigitalOutputPin(RaspiPin.GPIO_01, PinState.HIGH);
         
         try {
 			Thread.sleep(1000);
@@ -67,46 +72,47 @@ public class Robot {
 	        back_left.setPosAll((char)-52, (char)-118, (char)97);
 	        back_right.setPosAll((char)-52, (char)118, (char)97);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
         // Valeurs temporaires
         minHauteurPatte = 10;   // Defini hauteur de la base hexapod
         maxHauteurPatte = 14;   // Defini hauteur montee des pattes lors du mouvement
-        step = 0;
         
         // Definition de l'handle
         handle = this;
     }
     
+    /**
+     * Methode cyclique permettant de mettre a jour les pattes (step + 1)
+     */
     public void process() {
     	// TODO : methode appelle toute les ...ms (1step)
     	
-    	sendDirectionsPattes(step);
-    	
-    	step++;
-    	
-    	if(step >= STEPMAX)
-    		step = 0;
+    	sendDirectionsPattes();
     }
     
-    private void sendDirectionsPattes(int numStep) {
+    /**
+     * Methode cyclique permettant de mettre a jour les pattes (step + 1)
+     */
+    private void sendDirectionsPattes() {
     	// Step ==> 0 - 127
     	
-    	int w_x = x;
-    	int w_y = y;
-    	int w_z = z;
+    	// Copy pour evite la concurence d'acces
+    	int w_x = x_joy;
+    	int w_y = y_joy;
+    	int w_z = z_joy;
     	
-    	int module = 0;
-    	int angle = 0;
+    	// Variable de module et d'angle du joystick de gauche
+    	int moduleJoyLeft = 0;
+    	int angleJoyLeft = 0;
     	
-    	// TODO : conversion coordonnee joy ==> angle
+    	// TODO : conversion coordonnee joystick ==> angle
     	
     	if((w_x >= 10) || (w_y >= 10))
     	{
-    		module = 0;
-    		angle = 0;
+    		moduleJoyLeft = 0;
+    		angleJoyLeft = 0;
     	}
     	else
     	{
@@ -115,32 +121,32 @@ public class Robot {
     		{
     			if(w_y > 0)
     			{
-    				module = w_y;
-    				angle = 90;
+    				moduleJoyLeft = w_y;
+    				angleJoyLeft = 90;
     			}
     			else
     			{
-	    			module = -w_y;
-	    			angle = 270;
+	    			moduleJoyLeft = -w_y;
+	    			angleJoyLeft = 270;
     			}
     		}
     		else if	(w_y == 0)
     		{
     			if(w_x > 0)
     			{
-    				module = w_x;
-    				angle = 0;
+    				moduleJoyLeft = w_x;
+    				angleJoyLeft = 0;
     			}
     			else
     			{
-	    			module = -w_x;
-	    			angle = 180;
+	    			moduleJoyLeft = -w_x;
+	    			angleJoyLeft = 180;
     			}
     		}
     		else
     		{
     			// TODO : retourne des radians : modifier
-    			angle = (int)Math.atan2(w_y, w_x);
+    			angleJoyLeft = (int)Math.atan2(w_y, w_x);
     		}
     	}
     		
@@ -149,12 +155,12 @@ public class Robot {
     	
     	// Init Servomoteurs
         try {
-	    	front_left.setPosAll((char)52, (char)-118, (char)97);
-			front_right.setPosAll((char)52, (char)118, (char)97);
-	        middle_left.setPosAll((char)0, (char)-118, (char)97);
-	        middle_right.setPosAll((char)0, (char)118, (char)97);
-	        back_left.setPosAll((char)-52, (char)-118, (char)97);
-	        back_right.setPosAll((char)-52, (char)118, (char)97);
+	    	/*front_left.upDateDroiteMov(int angle, int longueur);
+			front_right.upDateDroiteMov(int angle, int longueur);
+	        middle_left.upDateDroiteMov(int angle, int longueur);
+	        middle_right.upDateDroiteMov(int angle, int longueur);
+	        back_left.upDateDroiteMov(int angle, int longueur);
+	        back_right.upDateDroiteMov(int angle, int longueur);*/
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -165,19 +171,34 @@ public class Robot {
     	return handle;
     }
     
+	/**
+	 * Methode permettant de mettre a jour la valeur du joystick gauche sur l'axe horizontal
+	 * 
+	 * @param x_ws
+	 * 			Valeur en int de la position du joystick gauche sur l'axe horizontal
+	 */
     public void MouvementX(int x_ws) {
-    	// X : axe vertical joystick gauche
-    	x = x_ws;
+    	x_joy = x_ws;
     }
     
+	/**
+	 * Methode permettant de mettre a jour la valeur du joystick gauche sur l'axe vertical
+	 * 
+	 * @param y_ws
+	 * 			Valeur en int de la position du joystick gauche sur l'axe vertical
+	 */
     public void MouvementY(int y_ws) {
-    	// Y : axe horizontal joystick gauche
-    	y = y_ws;
+    	y_joy = y_ws;
     }
-    
+
+	/**
+	 * Methode permettant de mettre a jour la valeur du joystick droit sur l'axe horizontal
+	 * 
+	 * @param z_ws
+	 * 			Valeur en int de la position du joystick droit sur l'axe horizontal
+	 */
     public void MouvementZ(int z_ws) {
-    	// Z : axe horizontal joystick droit
-    	z = z_ws;
+    	z_joy = z_ws;
     }    
     
 }

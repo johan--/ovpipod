@@ -4,7 +4,7 @@ import stdrpi.SerialRPi;
 
 /**
  *
- * @author jhergault
+ * @author Jeremy HERGAULT, Jean-Phillipe HAYES
  */
 public class Patte {
 	private int step;

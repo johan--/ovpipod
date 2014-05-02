@@ -12,11 +12,14 @@ import com.pi4j.io.serial.SerialPortException;
 
 /**
  *
- * @author jhergault
+ * @author Jeremy HERGAULT, Jean-Phillipe HAYES
  */
 public class SerialRPi {
     private final Serial serialPi;
     
+    /**
+     * Constructeur liaison serie 1 Mbits/s
+     */
     public SerialRPi() {
         // Creation de l'instance
         serialPi = SerialFactory.createInstance();

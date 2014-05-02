@@ -3,7 +3,7 @@ import stdrpi.SerialRPi;
 
 /**
  *
- * @author jhergault
+ * @author Jeremy HERGAULT, Jean-Phillipe HAYES
  */
 public class AX12 extends ServoMoteur {
     
