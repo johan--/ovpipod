@@ -7,11 +7,13 @@ import stdrpi.SerialRPi;
  * @author jhergault
  */
 public class Patte {
+	private int step;
+	
     private ServoMoteur servoCoxa;
     private ServoMoteur servoFemur;
     private ServoMoteur servoTibia;
     
-    public Patte(SerialRPi liaison, char IDCoxa, char IDFemur, char IDTibia) {
+    public Patte(SerialRPi liaison, int step, char IDCoxa, char IDFemur, char IDTibia) {
         try {
             servoCoxa = new AX12(liaison, IDCoxa);
             servoFemur = new AX12(liaison, IDFemur);
@@ -26,6 +28,24 @@ public class Patte {
     	setPosCoxa(PosCoxa);
     	setPosFemur(PosFemur);
     	setPosTibia(PosTibia);
+    }
+    
+    public void upDateDroiteMov(int angle, int longueur) throws Exception {
+
+    	char angleCoxa = 0;
+    	char angleFemur = 0;
+    	char angleTibia = 0;
+    	
+    	// TODO : droite avec step
+    	
+    	setPosCoxa(angleCoxa);
+    	setPosFemur(angleFemur);
+    	setPosTibia(angleTibia);
+    	
+    	/*servoCoxa.setPositionExtrapol(angleCoxa, vitesse);
+    	servoFemur.setPositionExtrapol(angleFemur, vitesse);
+    	servoTibia.setPositionExtrapol(angleTibia, vitesse);*/
+    	step++;
     }
     
     public void setPosCoxa(char position) throws Exception {

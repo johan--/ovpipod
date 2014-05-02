@@ -6,10 +6,8 @@ import stdrpi.SerialRPi;
  * @author jhergault
  */
 public abstract class ServoMoteur {
-    private SerialRPi serialPi;
-    private char IDServo;
-    private char angle;     // angle actuel du servomoteur
-    private char position;  // angle final voulu
+    protected SerialRPi serialPi;
+    protected char IDServo;
     
     public ServoMoteur(SerialRPi liaison, char ID) throws Exception {
         if((ID >= 0) && (ID <= 253))
@@ -20,11 +18,11 @@ public abstract class ServoMoteur {
         serialPi = liaison;
     }
     
-    private boolean testAngle(char w_angle) {
+    protected boolean testAngle(char w_angle) {
         return (w_angle >= 0) && (w_angle <= 1023);
     }
     
-    private char CalcCRC(char[] data) {
+    protected char CalcCRC(char[] data) {
         int len = data[4] + 4;
         byte crc = 0;
         for (int i = 2; i <= len; i++)
@@ -54,14 +52,6 @@ public abstract class ServoMoteur {
         serialPi.send(data, 9);
     }
     
-    public char getCurrentPosition() {
-        return angle;
-    }
-    
-    public char getObjPosition() {
-        return position;
-    }
-    
-    public abstract void setPositionExtrapol(char angle, float vitesse);
+    public abstract void setPositionExtrapol(char angle, char vitesse) throws Exception;
     
 }
