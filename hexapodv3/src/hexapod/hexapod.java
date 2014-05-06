@@ -1,3 +1,20 @@
+/**
+ * This file is part of OVPiPod.
+ *
+ * OVPiPod is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OVPiPod is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OVPiPod.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package hexapod;
 
 import java.util.Scanner;
@@ -37,7 +54,7 @@ public class hexapod {
     		}
     	}
     	
-    	if(choix != 0)
+    	if(choix == 0)
     	{
 	    	Scanner sc = new Scanner(System.in);
 	    	helpPrint();
@@ -49,6 +66,31 @@ public class hexapod {
     	{
     		System.out.println("**** Tests unitaires du programme OVPIPOD V3 ****");
     		// TODO : routine de test a effectuer ici JP
+    		
+    		int x = 255;
+    		int y = 255;
+    		System.out.println("** Tests angle methode static ArcTanDeg **");
+    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
+    		
+    		x = 0;
+    		y = 255;
+    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
+    		
+    		x = 0;
+    		y = 0;
+    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
+    		
+    		x = -255;
+    		y = -255;
+    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
+
+    		x = -255;
+    		y = -4;
+    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
+    		
+    		x = 255;
+    		y = -4;
+    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
     	}
     	else
     	{

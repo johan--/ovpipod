@@ -1,3 +1,20 @@
+/**
+ * This file is part of OVPiPod.
+ *
+ * OVPiPod is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OVPiPod is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OVPiPod.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package jetty;
 
 import java.io.IOException;
@@ -30,12 +47,8 @@ public class RobotWebSocketHandler {
      */
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
+    	WebSocketRobot.resetRobot();
         System.out.println("Close: statusCode=" + statusCode + ", reason=" + reason);
-
-        // send origin
-        Robot.getHandle().MouvementX(0);
-        Robot.getHandle().MouvementY(0);
-        Robot.getHandle().MouvementZ(0);
     }
 
     /**
@@ -46,12 +59,8 @@ public class RobotWebSocketHandler {
      */
     @OnWebSocketError
     public void onError(Throwable t) {
+    	WebSocketRobot.resetRobot();
         System.out.println("Error: " + t.getMessage());
-        
-        // send origin
-        Robot.getHandle().MouvementX(0);
-        Robot.getHandle().MouvementY(0);
-        Robot.getHandle().MouvementZ(0);
     }
 
     /**
@@ -62,12 +71,18 @@ public class RobotWebSocketHandler {
      */
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        System.out.println("Connect: " + session.getRemoteAddress().getAddress());
-        try {
-            session.getRemote().sendString("OVPIPOD V3.0");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    	if(!WebSocketRobot.clientIsConnected())
+    	{
+    		WebSocketRobot.clientConnect();
+	        System.out.println("Connect: " + session.getRemoteAddress().getAddress());
+	        try {
+	            session.getRemote().sendString("OVPIPOD V3.0");
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+    	}
+    	else
+    		session.close();
     }
 
     /**
@@ -81,14 +96,10 @@ public class RobotWebSocketHandler {
     	
     	String[] coord = message.split("[:]");
     	
-    	if(coord.length == 2)
-    	{
-    		System.out.println("COORD " + coord[0] + ": " + coord[1]);
-    	}
-    	else
-    	{
+    	if(coord.length != 2)
     		System.out.println("MSG : " + message);
-    	}
+    	/*else
+    		System.out.println("COORD " + coord[0] + ": " + coord[1]);*/
     	
     	switch(coord[0])
     	{

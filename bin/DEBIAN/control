@@ -1,0 +1,9 @@
+Package: ovpipod
+Version: 1.0
+Section: base
+Priority: optional
+Architecture: all
+Depends: bash java
+Maintainer: HERGAULT <jeremy.hergault@orange.fr>
+Description: Programme de control hexapod
+Homepage: https://github.com/reneca/ovpipod

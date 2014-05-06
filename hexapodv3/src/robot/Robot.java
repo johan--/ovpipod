@@ -1,3 +1,20 @@
+/**
+ * This file is part of OVPiPod.
+ *
+ * OVPiPod is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OVPiPod is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OVPiPod.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package robot;
 
 import com.pi4j.io.gpio.GpioController;
@@ -94,6 +111,7 @@ public class Robot {
 	        public void run()
 	        {
 	            System.out.printf("ProcessTask");
+	            sendDirectionsPattes();
 	        }
         };
         periodTimer = 100;
@@ -108,7 +126,7 @@ public class Robot {
     	long w_periodTimer = 100;
     	// Set du timer appellant la methode sendDirectionsPattes cycliquement
     	
-    	// TODO : calcul timer
+    	// TODO : calcul timer avec module joy gauche (et droit)
     	
     	if(w_periodTimer != periodTimer)
     	{
@@ -172,8 +190,7 @@ public class Robot {
     		}
     		else
     		{
-    			// TODO : retourne des radians : modifier
-    			angleJoyLeft = (int)Math.atan2(w_y, w_x);
+    			angleJoyLeft = ArcTanDeg(w_x, w_y);
     		}
     	}
     		
@@ -241,6 +258,11 @@ public class Robot {
     		z_joy = z_ws;
     		processDirectionRobot();
     	}
-    }    
+    }
+    
+    public static int ArcTanDeg(int x, int y)
+    {
+    	return (int)((Math.round(Math.toDegrees(Math.atan2(y, x))) + 360) % 360);
+    }
     
 }
