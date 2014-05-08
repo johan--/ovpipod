@@ -91,7 +91,7 @@
 
 		// envoi coord joystick
 		socket.send('xl:' + (Math.round( joystick2.deltaX() ) * 3));
-		socket.send('yl:' + (Math.round( joystick2.deltaY() ) * 3));
+		socket.send('yl:' + (Math.round( joystick2.deltaY() ) * (-3)));
 		socket.send('xr:' + (Math.round( joystick1.deltaX() ) * 3));
 		// non utilise
 		//socket.send('yr:' + (Math.round( joystick1.deltaY() ) * 3));

@@ -38,7 +38,7 @@ public abstract class ServoMoteur {
     }
     
     protected boolean testAngle(char w_angle) {
-        return (w_angle >= 0) && (w_angle <= 1023);
+        return ((w_angle >= 0) && (w_angle <= 1023));
     }
     
     protected char CalcCRC(char[] data) {

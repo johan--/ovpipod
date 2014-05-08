@@ -91,6 +91,13 @@ public class hexapod {
     		x = 255;
     		y = -4;
     		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
+    		
+    		System.out.println("** Tests droite Patte **");
+    		for(int i = 0; i < 360; i++)
+    		{
+    			structPatte test2 = Patte.getPointTop(i, 140);
+    			System.out.println("angleCoxa = " + (int)test2.getAngleCoxa() + ", angleFemur = " + (int)test2.getAngleFemur() + ", angleTibia = " + (int)test2.getAngleTibia() );
+    		}
     	}
     	else
     	{
@@ -116,9 +123,9 @@ public class hexapod {
      */
     private static void helpPrint() {
     	System.out.println("Choix execution :");
-    	System.out.println("    - 1 : GPIO servomoteur raspberry pi");
-    	System.out.println("    - 2 : Jetty websocket");
-    	System.out.println("    - 3 : Lancement total");
-    	System.out.println("    - 7 : Routine de test du programme");
+    	System.out.println("\t- 1 : GPIO servomoteur raspberry pi");
+    	System.out.println("\t- 2 : Jetty websocket");
+    	System.out.println("\t- 3 : Lancement total");
+    	System.out.println("\t- 7 : Routine de test du programme");
     }
 }

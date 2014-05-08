@@ -83,17 +83,17 @@ public class SerialRPi {
     		for(int i = 0; i < lenght; i++) {
 	    		serialPi.write(data[i]);
     		}
+    		serialPi.flush();
+    		
+    		// Attente avant nouvel envoi
+    		try {
+    			Thread.sleep(1);
+    		} catch (InterruptedException e) {
+    			e.printStackTrace();
+    		}
     	}
     	else {
     		System.out.println("Serie non ouvert");
     	}
-    	
-    	// Attente avant de passer au moteur suivant
-        /*try {
-			Thread.sleep(4);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
     }
 }

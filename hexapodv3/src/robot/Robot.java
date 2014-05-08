@@ -18,7 +18,7 @@
 package robot;
 
 import com.pi4j.io.gpio.GpioController;
-//import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
@@ -35,13 +35,30 @@ import stdrpi.SerialRPi;
  */
 public class Robot {
 	public static final int STEPMAX = 128;
+	public static final int DEADZONEJOY = 10;
+	public static final int OFFSETANGLE = 45;	// TODO
+	public static final int LONGUEURMAX = 140;
+	
+	private int angleFL;
+	private int angleFR;
+	private int angleML;
+	private int angleMR;
+	private int angleBL;
+	private int angleBR;
+	
+	private int longueurFL;
+	private int longueurFR;
+	private int longueurML;
+	private int longueurMR;
+	private int longueurBL;
+	private int longueurBR;
 	
 	private TimerTask processTask;
 	private Timer timer;
 	private long periodTimer;
 	
-    private int minHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont pose
-    private int maxHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont leve
+    //private int minHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont pose
+    //private int maxHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont leve
 
     // Valeurs en INT de -255 a 255 des joysticks
     private int x_joy;
@@ -50,7 +67,8 @@ public class Robot {
     
     private static Robot handle;
     
-    //private final GpioPinDigitalOutput modeBasc;
+    @SuppressWarnings("unused")
+	private final GpioPinDigitalOutput modeBasc;
     
     // Definition des pattes pour un Hexapod
     private Patte front_left;
@@ -71,7 +89,7 @@ public class Robot {
         SerialRPi liaisonRS232 = new SerialRPi();
         
         // Positionnement bascule mode emission
-        /*modeBasc = */gpioRPi.provisionDigitalOutputPin(RaspiPin.GPIO_01, PinState.HIGH);
+        modeBasc = gpioRPi.provisionDigitalOutputPin(RaspiPin.GPIO_01, PinState.HIGH);
         
         try {
 			Thread.sleep(1000);
@@ -87,21 +105,25 @@ public class Robot {
         back_left = new Patte(liaisonRS232, (STEPMAX/4), (char)7, (char)9, (char)11);
         back_right = new Patte(liaisonRS232, ((STEPMAX/4)*3), (char)8, (char)10, (char)12);
         
+        System.out.print("InitServo ... ");
+        
         // Init Servomoteurs
         try {
-			front_left.setPosAll((char)52, (char)-118, (char)97);
-			front_right.setPosAll((char)52, (char)118, (char)97);
-	        middle_left.setPosAll((char)0, (char)-118, (char)97);
-	        middle_right.setPosAll((char)0, (char)118, (char)97);
-	        back_left.setPosAll((char)-52, (char)-118, (char)97);
-	        back_right.setPosAll((char)-52, (char)118, (char)97);
+			front_left.setPosAll((char)512, (char)610, (char)300);
+			front_right.setPosAll((char)512, (char)610, (char)300);
+	        middle_left.setPosAll((char)512, (char)610, (char)300);
+	        middle_right.setPosAll((char)512, (char)610, (char)300);
+	        back_left.setPosAll((char)512, (char)610, (char)300);
+	        back_right.setPosAll((char)512, (char)610, (char)300);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
         
+        System.out.println(" OK");
+        
         // Valeurs temporaires
-        minHauteurPatte = 10;   // Defini hauteur de la base hexapod
-        maxHauteurPatte = 14;   // Defini hauteur montee des pattes lors du mouvement
+        //minHauteurPatte = 10;   // Defini hauteur de la base hexapod
+        //maxHauteurPatte = 14;   // Defini hauteur montee des pattes lors du mouvement
         
         // Definition de l'handle
         handle = this;
@@ -123,17 +145,75 @@ public class Robot {
      * Methode permettant de parametrer le timer par rapport au module des joysticks
      */
     public void processDirectionRobot() {
-    	long w_periodTimer = 100;
+    	long w_periodTimer = 50;
     	// Set du timer appellant la methode sendDirectionsPattes cycliquement
     	
-    	// TODO : calcul timer avec module joy gauche (et droit)
+    	int w_x = x_joy;
+    	int w_y = y_joy;
+    	int w_z = z_joy;
     	
-    	if(w_periodTimer != periodTimer)
+    	int angleLeftJoy = ArcTanDeg(w_x, w_y);
+    	System.out.println("angleJoy = " + angleLeftJoy);
+    	
+    	// TODO calcul module
+
+    	if(w_z == 0)
+    	{
+    		// TODO sans CIR
+    		
+    		if( (w_x != 0) || (w_y != 0) )
+    		{
+    			// Mouvement sans CIR
+    			angleFL		= (angleLeftJoy + OFFSETANGLE) % 360;
+    			longueurFL	= LONGUEURMAX;
+    			
+    			angleFR		= (angleLeftJoy - OFFSETANGLE + 180) % 360;
+    			longueurFR	= LONGUEURMAX;
+    	        
+    			angleML		= angleLeftJoy;
+    			longueurML	= LONGUEURMAX;
+    	        
+    			angleMR		= (angleLeftJoy + 180) % 360;
+    			longueurMR	= LONGUEURMAX;
+    	        
+    			angleBL		= (angleLeftJoy - OFFSETANGLE) % 360;
+    			longueurBL	= LONGUEURMAX;
+    	        
+    			angleBR		= (angleLeftJoy + OFFSETANGLE + 180) % 360;
+    			longueurBR	= LONGUEURMAX;
+    			
+    			// TODO : remove
+    	        try {
+    				front_left.upDateDroiteMov(angleFL, longueurFL);
+    				front_right.upDateDroiteMov(angleFR, longueurFR);
+    		        middle_left.upDateDroiteMov(angleML, longueurML);
+    		        middle_right.upDateDroiteMov(angleMR, longueurMR);
+    		        back_left.upDateDroiteMov(angleBL, longueurBL);
+    		        back_right.upDateDroiteMov(angleBR, longueurBR);
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			}
+    		}
+    		else
+    			w_periodTimer = 0;
+    	}
+    	else
+    	{
+    		// TODO avec CIR
+    	}
+    	
+    	/*if(w_periodTimer != periodTimer)
     	{
     		periodTimer = w_periodTimer;
-    		timer.cancel();
-    		timer.schedule(processTask, 0, periodTimer);
-    	}
+    		
+    		if(periodTimer != 0)
+    			timer.cancel();
+    		
+    		if(w_periodTimer != 0)
+    			timer.schedule(processTask, 0, periodTimer);
+    	}*/
+    	
+    	System.out.println("timer = " + periodTimer);
     }
     
     /**
@@ -143,72 +223,26 @@ public class Robot {
     	// TODO : methode appelle toute les ...ms (1step)
     	// Step ==> 0 - 127
     	
-    	// Copy pour evite la concurence d'acces
-    	int w_x = x_joy;
-    	int w_y = y_joy;
-    	int w_z = z_joy;
     	
-    	// Variable de module et d'angle du joystick de gauche
-    	int moduleJoyLeft = 0;
-    	int angleJoyLeft = 0;
-    	
-    	// TODO : conversion coordonnee joystick ==> angle
-    	
-    	if((w_x >= 10) || (w_y >= 10))
+    	// Mise a jour des patte !!!NE RIEN FAIRE SI JOY = 0!!!
+    	if( (x_joy == 0) && (y_joy == 0) && (z_joy == 0) )
     	{
-    		moduleJoyLeft = 0;
-    		angleJoyLeft = 0;
+    		// baisser toute les pattes
     	}
     	else
     	{
-    		// TODO : conversion
-    		if (w_x == 0)
-    		{
-    			if(w_y > 0)
-    			{
-    				moduleJoyLeft = w_y;
-    				angleJoyLeft = 90;
-    			}
-    			else
-    			{
-	    			moduleJoyLeft = -w_y;
-	    			angleJoyLeft = 270;
-    			}
-    		}
-    		else if	(w_y == 0)
-    		{
-    			if(w_x > 0)
-    			{
-    				moduleJoyLeft = w_x;
-    				angleJoyLeft = 0;
-    			}
-    			else
-    			{
-	    			moduleJoyLeft = -w_x;
-	    			angleJoyLeft = 180;
-    			}
-    		}
-    		else
-    		{
-    			angleJoyLeft = ArcTanDeg(w_x, w_y);
-    		}
+	        try {
+		    	front_left.upDateDroiteMov(angleFL, longueurFL);
+				front_right.upDateDroiteMov(angleFR, longueurFR);
+		        middle_left.upDateDroiteMov(angleML, longueurML);
+		        middle_right.upDateDroiteMov(angleMR, longueurMR);
+		        back_left.upDateDroiteMov(angleBL, longueurBL);
+		        back_right.upDateDroiteMov(angleBR, longueurBR);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     	}
-    		
-    	
-    	// TODO : conversion joy ==> directions pattes
-    	
-    	// Mise a jour des patte !!!NE RIEN FAIRE SI JOY = 0!!!
-        try {
-	    	/*front_left.upDateDroiteMov(int angle, int longueur);
-			front_right.upDateDroiteMov(int angle, int longueur);
-	        middle_left.upDateDroiteMov(int angle, int longueur);
-	        middle_right.upDateDroiteMov(int angle, int longueur);
-	        back_left.upDateDroiteMov(int angle, int longueur);
-	        back_right.upDateDroiteMov(int angle, int longueur);*/
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
     
     /**
@@ -225,6 +259,9 @@ public class Robot {
 	 * 			Valeur en int (-255 a 255) de la position du joystick gauche sur l'axe horizontal
 	 */
     public void MouvementX(int x_ws) {
+    	if( (x_ws > (-DEADZONEJOY)) && (x_ws < (DEADZONEJOY)) )
+    		x_ws = 0;
+
     	if(x_joy != x_ws)
     	{
     		x_joy = x_ws;
@@ -239,6 +276,9 @@ public class Robot {
 	 * 			Valeur en int (-255 a 255) de la position du joystick gauche sur l'axe vertical
 	 */
     public void MouvementY(int y_ws) {
+    	if( (y_ws > (-DEADZONEJOY)) && (y_ws < (DEADZONEJOY)) )
+    		y_ws = 0;
+    	
     	if(y_joy != y_ws)
     	{
     		y_joy = y_ws;
@@ -253,6 +293,9 @@ public class Robot {
 	 * 			Valeur en int (-255 a 255) de la position du joystick droit sur l'axe horizontal
 	 */
     public void MouvementZ(int z_ws) {
+    	if( (z_ws > (-DEADZONEJOY)) && (z_ws < (DEADZONEJOY)) )
+    		z_ws = 0;
+    	
     	if(z_joy != z_ws)
     	{
     		z_joy = z_ws;
@@ -260,9 +303,19 @@ public class Robot {
     	}
     }
     
+    /**
+	 * Methode permettant de retourner un angle à partir de deux coordonnees cartesiennes
+	 * 
+	 * @param x
+	 * 			Valeur en x de la coordonnee cartesienne
+	 * 
+	 * @param y
+	 * 			Valeur en y de la coordonnee cartesienne
+	 * 
+	 * @return Angle en degre par rapport aux coordonnees
+	 */
     public static int ArcTanDeg(int x, int y)
     {
     	return (int)((Math.round(Math.toDegrees(Math.atan2(y, x))) + 360) % 360);
     }
-    
 }
