@@ -67,36 +67,11 @@ public class hexapod {
     		System.out.println("**** Tests unitaires du programme OVPIPOD V3 ****");
     		// TODO : routine de test a effectuer ici JP
     		
-    		int x = 255;
-    		int y = 255;
-    		System.out.println("** Tests angle methode static ArcTanDeg **");
-    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
-    		
-    		x = 0;
-    		y = 255;
-    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
-    		
-    		x = 0;
-    		y = 0;
-    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
-    		
-    		x = -255;
-    		y = -255;
-    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
-
-    		x = -255;
-    		y = -4;
-    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
-    		
-    		x = 255;
-    		y = -4;
-    		System.out.println("x = " + x + ", y = " + y + " - angle = " + Robot.ArcTanDeg(x, y) + "°" );
-    		
     		System.out.println("** Tests droite Patte **");
     		for(int i = 0; i < 360; i++)
     		{
-    			structPatte test2 = Patte.getPointTop(i, 140);
-    			System.out.println("angleCoxa = " + (int)test2.getAngleCoxa() + ", angleFemur = " + (int)test2.getAngleFemur() + ", angleTibia = " + (int)test2.getAngleTibia() );
+    			structPatte test2 = Patte.getPointTop(i, 100);
+    			System.out.println((int)test2.getAngleCoxa() + "|" + (int)test2.getAngleFemur() + "|" + (int)test2.getAngleTibia() );
     		}
     	}
     	else

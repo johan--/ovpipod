@@ -18,10 +18,26 @@
 <html><body><br />
 <span id="result"></span>
 <script src="virtualjoystick.js"></script>
+<script src="gamepadapi.js"></script>
 <script>
-
+	var typeJoystick;
+	var etatJoy;
 	var etatWs;
 	var msgWs;
+	var boutons;
+	
+	var joyXL;
+	var joyYL;
+	var joyXR;
+	var joyYR;
+	var carre;
+	var croix;
+	var rond;
+	var triangle;
+	var L1;
+	var R1;
+	var L2;
+	var R2;
 
 	if ('WebSocket' in window)
 	{
@@ -50,51 +66,124 @@
 
 		/*WebSockets are not supported. Try a fallback method like long-polling etc*/
 	}
+	
+	typeJoystick = VirtualJoystick.touchScreenAvailable();
  
-	// INIT joystick
-	var joystick1	= new VirtualJoystick({
-		container	: document.body,
-		strokeStyle	: 'cyan',
-		limitStickTravel: true,
-		stickRadius	: 85		
-	});
-	joystick1.addEventListener('touchStartValidation', function(event){
-		var touch	= event.changedTouches[0];
-		if( touch.pageX < window.innerWidth/2 )	return false;
-		return true
-	});
-	var joystick2	= new VirtualJoystick({
-		container	: document.body,
-		strokeStyle	: 'orange',
-		limitStickTravel: true,
-		stickRadius	: 85		
-	});
-	joystick2.addEventListener('touchStartValidation', function(event){
-		var touch	= event.changedTouches[0];
-		if( touch.pageX >= window.innerWidth/2 )	return false;
-		return true
-	});
+ 	if(typeJoystick)
+ 	{
+		// INIT virtualjoystick
+		var joystick1	= new VirtualJoystick({
+			container	: document.body,
+			strokeStyle	: 'cyan',
+			limitStickTravel: true,
+			stickRadius	: 85		
+		});
+		joystick1.addEventListener('touchStartValidation', function(event){
+			var touch	= event.changedTouches[0];
+			if( touch.pageX < window.innerWidth/2 )	return false;
+			return true
+		});
+		var joystick2	= new VirtualJoystick({
+			container	: document.body,
+			strokeStyle	: 'orange',
+			limitStickTravel: true,
+			stickRadius	: 85		
+		});
+		joystick2.addEventListener('touchStartValidation', function(event){
+			var touch	= event.changedTouches[0];
+			if( touch.pageX >= window.innerWidth/2 )	return false;
+			return true
+		});
+	}
+	else
+	{
+		// Attente connexion gamepad gamepad
+		window.addEventListener("gamepadconnected", connecthandler);
+		window.addEventListener("gamepaddisconnected", disconnecthandler);
+	}
 
 	// Routine toute les ms
-
 	setInterval(function(){
 		var outputEl	= document.getElementById('result');
+		
+		if(typeJoystick)
+		{
+			joyXL = (Math.round( joystick2.deltaX() ) * 3);
+			joyYL = (Math.round( joystick2.deltaY() ) * (-3));
+			joyXR = (Math.round( joystick1.deltaX() ) * 3);
+			joyYR = (Math.round( joystick1.deltaY() ) * (-3));
+		}
+		else
+		{			
+			if(etatJoyPad == 0)
+			{
+				// Reach List gamepads
+				scangamepads();
+				joyXL = 0;
+				joyYL = 0;
+				joyXR = 0;
+				joyYR = 0;
+			}
+			else
+			{
+				var controller = controllers[0];
+			
+				// recuperation des mouvements
+				if(controller.buttons.length >= 6)
+				{
+					carre = controller.buttons[0].pressed;
+					croix = controller.buttons[1].pressed;
+					rond = controller.buttons[2].pressed;
+					triangle = controller.buttons[3].pressed;
+					L1 = controller.buttons[4].pressed;
+					R1 = controller.buttons[5].pressed;
+				}
+				else if(controller.buttons.length >= 4)
+				{
+					carre = controller.buttons[0].pressed;
+					croix = controller.buttons[1].pressed;
+					rond = controller.buttons[2].pressed;
+					triangle = controller.buttons[3].pressed;
+				}
+				
+				joyXL = Math.round(controller.axes[0] * 255);
+				joyYL = Math.round(controller.axes[1] * (-255));
+				joyXR = Math.round(controller.axes[2] * 255);
+				joyYR = Math.round(controller.axes[3] * (-255));
+				
+				if(controller.axes.length >= 6)
+				{
+					// Recuperation des gachettes
+					L2 = Math.round(controller.axes[4] * 255);
+					R2 = Math.round(controller.axes[5] * 255);
+				}
+				
+				boutons = carre + (croix<<1) + (rond<<2) + (triangle<<3) + (L1<<4) + (R1<<5);
+			}
+		}
+		
 		outputEl.innerHTML	= '<b>etat WS:</b> ' + etatWs + '<br />'
 			+ '<b>msg WS:</b> ' + msgWs + '<br />'
 			+ '<b>touch:</b> ' + VirtualJoystick.touchScreenAvailable() + '<br />'
-			+ '<b>Joystick1:</b> '
-			+ ' dx:'+ (Math.round( joystick1.deltaX() ) * 3)
-			+ ' dy:'+ (Math.round( joystick1.deltaY() ) * 3)
-			+ '<br /><b>Joystick2:</b> '
-			+ ' dx:'+ (Math.round( joystick2.deltaX() ) * 3)
-			+ ' dy:'+ (Math.round( joystick2.deltaY() ) * 3)
+			+ '<b>JoystickLeft:</b> '
+			+ ' dx:'+ joyXL
+			+ ' dy:'+ joyYL
+			+ '<br /><b>JoystickRight:</b> '
+			+ ' dx:'+ joyXR
+			+ ' dy:'+ joyYR
+			+ '<br /><b>boutons</b> '
+			+ ' bouton:'+ boutons
+			+ ' L2:'+ L2
+			+ ' R2:'+ R2
 
 		// envoi coord joystick
-		socket.send('xl:' + (Math.round( joystick2.deltaX() ) * 3));
-		socket.send('yl:' + (Math.round( joystick2.deltaY() ) * (-3)));
-		socket.send('xr:' + (Math.round( joystick1.deltaX() ) * 3));
-		// non utilise
-		//socket.send('yr:' + (Math.round( joystick1.deltaY() ) * 3));
+		socket.send('xl:' + joyXL);
+		socket.send('yl:' + joyYL);
+		socket.send('xr:' + joyXR);
+		socket.send('yr:' + joyYR);
+		socket.send('bt:' + boutons);
+		socket.send('l2:' + L2);
+		socket.send('r2:' + R2);
 	}, 1/20 * 1000);
 </script></body>
 </html>

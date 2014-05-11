@@ -34,10 +34,11 @@ import stdrpi.SerialRPi;
  * @author Jeremy HERGAULT, Jean-Phillipe HAYES
  */
 public class Robot {
-	public static final int STEPMAX = 128;
-	public static final int DEADZONEJOY = 10;
-	public static final int OFFSETANGLE = 45;	// TODO
-	public static final int LONGUEURMAX = 140;
+	public static final int STEPMAX = 64;
+	public static final int DEADZONEJOY = 20;
+	public static final int OFFSETANGLE = 45;
+	public static final int LONGUEURMAX = 100;
+	public static final int VALUPPATTE = 40;
 	
 	private int angleFL;
 	private int angleFR;
@@ -145,7 +146,7 @@ public class Robot {
      * Methode permettant de parametrer le timer par rapport au module des joysticks
      */
     public void processDirectionRobot() {
-    	long w_periodTimer = 50;
+    	long w_periodTimer = 100;
     	// Set du timer appellant la methode sendDirectionsPattes cycliquement
     	
     	int w_x = x_joy;
@@ -181,18 +182,6 @@ public class Robot {
     	        
     			angleBR		= (angleLeftJoy + OFFSETANGLE + 180) % 360;
     			longueurBR	= LONGUEURMAX;
-    			
-    			// TODO : remove
-    	        try {
-    				front_left.upDateDroiteMov(angleFL, longueurFL);
-    				front_right.upDateDroiteMov(angleFR, longueurFR);
-    		        middle_left.upDateDroiteMov(angleML, longueurML);
-    		        middle_right.upDateDroiteMov(angleMR, longueurMR);
-    		        back_left.upDateDroiteMov(angleBL, longueurBL);
-    		        back_right.upDateDroiteMov(angleBR, longueurBR);
-    			} catch (Exception e) {
-    				e.printStackTrace();
-    			}
     		}
     		else
     			w_periodTimer = 0;
@@ -202,16 +191,16 @@ public class Robot {
     		// TODO avec CIR
     	}
     	
-    	/*if(w_periodTimer != periodTimer)
-    	{
-    		periodTimer = w_periodTimer;
-    		
+    	if(w_periodTimer != periodTimer)
+    	{    		
     		if(periodTimer != 0)
     			timer.cancel();
     		
     		if(w_periodTimer != 0)
     			timer.schedule(processTask, 0, periodTimer);
-    	}*/
+    		
+    		periodTimer = w_periodTimer;
+    	}
     	
     	System.out.println("timer = " + periodTimer);
     }
@@ -224,7 +213,7 @@ public class Robot {
     	// Step ==> 0 - 127
     	
     	
-    	// Mise a jour des patte !!!NE RIEN FAIRE SI JOY = 0!!!
+    	// Mise a jour des patte
     	if( (x_joy == 0) && (y_joy == 0) && (z_joy == 0) )
     	{
     		// baisser toute les pattes
@@ -239,7 +228,6 @@ public class Robot {
 		        back_left.upDateDroiteMov(angleBL, longueurBL);
 		        back_right.upDateDroiteMov(angleBR, longueurBR);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
@@ -304,7 +292,7 @@ public class Robot {
     }
     
     /**
-	 * Methode permettant de retourner un angle à partir de deux coordonnees cartesiennes
+	 * Methode permettant de retourner un angle a partir de deux coordonnees cartesiennes
 	 * 
 	 * @param x
 	 * 			Valeur en x de la coordonnee cartesienne

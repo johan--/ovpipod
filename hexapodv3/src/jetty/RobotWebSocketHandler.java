@@ -119,6 +119,18 @@ public class RobotWebSocketHandler {
     			// joystick vertical droit
         		//Robot.getHandle().Mouvement?(Integer.parseInt(coord[1]));
     			break;
+    		case "bt":
+    			// boutons gamepads
+    			// TODO
+    			break;
+    		case "l2":
+    			//
+    			// TODO
+    			break;
+    		case "r2":
+    			//
+    			// TODO
+    			break;
     		default:
     			System.out.println("La donnee recu n'est pas un mouvement correct : " + coord[0]);
     	}
