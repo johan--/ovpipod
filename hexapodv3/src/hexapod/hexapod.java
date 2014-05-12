@@ -67,12 +67,13 @@ public class hexapod {
     		System.out.println("**** Tests unitaires du programme OVPIPOD V3 ****");
     		// TODO : routine de test a effectuer ici JP
     		
-    		System.out.println("** Tests droite Patte **");
+    		/*System.out.println("** Tests droite Patte **");
     		for(int i = 0; i < 360; i++)
     		{
-    			structPatte test2 = Patte.getPointTop(i, 100);
+    			System.out.print(i + "|");
+    			structPatte test2 = Patte.getPointTop(i, 140);
     			System.out.println((int)test2.getAngleCoxa() + "|" + (int)test2.getAngleFemur() + "|" + (int)test2.getAngleTibia() );
-    		}
+    		}*/
     	}
     	else
     	{

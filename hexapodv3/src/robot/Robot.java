@@ -34,11 +34,11 @@ import stdrpi.SerialRPi;
  * @author Jeremy HERGAULT, Jean-Phillipe HAYES
  */
 public class Robot {
-	public static final int STEPMAX = 64;
-	public static final int DEADZONEJOY = 20;
-	public static final int OFFSETANGLE = 45;
-	public static final int LONGUEURMAX = 100;
-	public static final int VALUPPATTE = 40;
+	public static final int STEP_MAX = 64;
+	public static final int DEAD_ZONE_JOY = 20;
+	public static final int OFFSET_ANGLE = 45;
+	public static final int LONGUEUR_MAX = 140;
+	public static final int VAL_UP_PATTE = 40;
 	
 	private int angleFL;
 	private int angleFR;
@@ -99,12 +99,12 @@ public class Robot {
 		}
         
         // Creation des pattes de l'hexapod
-        front_left = new Patte(liaisonRS232, (STEPMAX/4), (char)1, (char)3, (char)5);
-        front_right = new Patte(liaisonRS232, ((STEPMAX/4)*3), (char)2, (char)4, (char)6);
-        middle_left = new Patte(liaisonRS232, ((STEPMAX/4)*3), (char)13, (char)15, (char)17);
-        middle_right = new Patte(liaisonRS232, (STEPMAX/4), (char)14, (char)16, (char)18);
-        back_left = new Patte(liaisonRS232, (STEPMAX/4), (char)7, (char)9, (char)11);
-        back_right = new Patte(liaisonRS232, ((STEPMAX/4)*3), (char)8, (char)10, (char)12);
+        front_left = new Patte(liaisonRS232, (STEP_MAX/4), (char)1, (char)3, (char)5);
+        front_right = new Patte(liaisonRS232, ((STEP_MAX/4)*3), (char)2, (char)4, (char)6);
+        middle_left = new Patte(liaisonRS232, ((STEP_MAX/4)*3), (char)13, (char)15, (char)17);
+        middle_right = new Patte(liaisonRS232, (STEP_MAX/4), (char)14, (char)16, (char)18);
+        back_left = new Patte(liaisonRS232, (STEP_MAX/4), (char)7, (char)9, (char)11);
+        back_right = new Patte(liaisonRS232, ((STEP_MAX/4)*3), (char)8, (char)10, (char)12);
         
         System.out.print("InitServo ... ");
         
@@ -165,23 +165,23 @@ public class Robot {
     		if( (w_x != 0) || (w_y != 0) )
     		{
     			// Mouvement sans CIR
-    			angleFL		= (angleLeftJoy + OFFSETANGLE) % 360;
-    			longueurFL	= LONGUEURMAX;
+    			angleFL		= (angleLeftJoy + OFFSET_ANGLE) % 360;
+    			longueurFL	= LONGUEUR_MAX;
     			
-    			angleFR		= (angleLeftJoy - OFFSETANGLE + 180) % 360;
-    			longueurFR	= LONGUEURMAX;
+    			angleFR		= (angleLeftJoy - OFFSET_ANGLE + 180) % 360;
+    			longueurFR	= LONGUEUR_MAX;
     	        
     			angleML		= angleLeftJoy;
-    			longueurML	= LONGUEURMAX;
+    			longueurML	= LONGUEUR_MAX;
     	        
     			angleMR		= (angleLeftJoy + 180) % 360;
-    			longueurMR	= LONGUEURMAX;
+    			longueurMR	= LONGUEUR_MAX;
     	        
-    			angleBL		= (angleLeftJoy - OFFSETANGLE) % 360;
-    			longueurBL	= LONGUEURMAX;
+    			angleBL		= (angleLeftJoy - OFFSET_ANGLE) % 360;
+    			longueurBL	= LONGUEUR_MAX;
     	        
-    			angleBR		= (angleLeftJoy + OFFSETANGLE + 180) % 360;
-    			longueurBR	= LONGUEURMAX;
+    			angleBR		= (angleLeftJoy + OFFSET_ANGLE + 180) % 360;
+    			longueurBR	= LONGUEUR_MAX;
     		}
     		else
     			w_periodTimer = 0;
@@ -202,7 +202,7 @@ public class Robot {
     		periodTimer = w_periodTimer;
     	}
     	
-    	System.out.println("timer = " + periodTimer);
+    	//System.out.println("timer = " + periodTimer);
     }
     
     /**
@@ -247,7 +247,7 @@ public class Robot {
 	 * 			Valeur en int (-255 a 255) de la position du joystick gauche sur l'axe horizontal
 	 */
     public void MouvementX(int x_ws) {
-    	if( (x_ws > (-DEADZONEJOY)) && (x_ws < (DEADZONEJOY)) )
+    	if( (x_ws > (-DEAD_ZONE_JOY)) && (x_ws < (DEAD_ZONE_JOY)) )
     		x_ws = 0;
 
     	if(x_joy != x_ws)
@@ -264,7 +264,7 @@ public class Robot {
 	 * 			Valeur en int (-255 a 255) de la position du joystick gauche sur l'axe vertical
 	 */
     public void MouvementY(int y_ws) {
-    	if( (y_ws > (-DEADZONEJOY)) && (y_ws < (DEADZONEJOY)) )
+    	if( (y_ws > (-DEAD_ZONE_JOY)) && (y_ws < (DEAD_ZONE_JOY)) )
     		y_ws = 0;
     	
     	if(y_joy != y_ws)
@@ -281,7 +281,7 @@ public class Robot {
 	 * 			Valeur en int (-255 a 255) de la position du joystick droit sur l'axe horizontal
 	 */
     public void MouvementZ(int z_ws) {
-    	if( (z_ws > (-DEADZONEJOY)) && (z_ws < (DEADZONEJOY)) )
+    	if( (z_ws > (-DEAD_ZONE_JOY)) && (z_ws < (DEAD_ZONE_JOY)) )
     		z_ws = 0;
     	
     	if(z_joy != z_ws)
