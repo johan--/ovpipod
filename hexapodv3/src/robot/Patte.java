@@ -47,7 +47,9 @@ public class Patte {
      * @param IDTibia
      * 			ID du servomoteur Tibia de la patte
      */
-    public Patte(SerialRPi liaison, int step, char IDCoxa, char IDFemur, char IDTibia) {
+    public Patte(SerialRPi liaison, int Step, char IDCoxa, char IDFemur, char IDTibia) {
+    	step = Step;
+    	
         try {
             servoCoxa = new AX12(liaison, IDCoxa);
             servoFemur = new AX12(liaison, IDFemur);
@@ -158,7 +160,7 @@ public class Patte {
      * 			Angle du servomoteur de 0 a 0FFF
      */
     public void setPosFemur(char position) throws Exception {
-    	if((position < 341) || (position > 683))
+    	if((position < 316) || (position > 690))
     		throw new Exception("Erreur angle servomoteur Femur : " + (int)position);
 
     	servoFemur.setPosition(position);
@@ -186,7 +188,8 @@ public class Patte {
      * @return objet structPatte contenant les angles pour la patte en l'air
      */
     private static structPatte upPatte(structPatte position) {
-    	position.setAngleFemur((char)(position.getAngleFemur() + Robot.VAL_UP_PATTE));
+    	position.setAngleFemur((char)(position.getAngleFemur() - Robot.VAL_UP_PATTE));
+    	position.setAngleTibia((char)(position.getAngleTibia() - Robot.VAL_UP_PATTE));
     	return position;
     }
     
@@ -194,7 +197,17 @@ public class Patte {
      * Methode renvoyant les angles des servomoteurs pour la position middle
      */
     public static structPatte getPointMiddle() {
-    	return new structPatte((char)512, (char)154, (char)590);
+    	return new structPatte((char)512, (char)575, (char)362);
+    	//return getAlterMiddle();
+    }
+    
+    public static structPatte getAlterMiddle() {
+    	structPatte w_top = getPointTop(0, 100);
+    	structPatte w_down = getPointTop(180, 100);
+    	
+    	return new structPatte((char)512,
+    			(char)((w_top.getAngleFemur() + w_down.getAngleFemur()) / 2 ),
+    			(char)((w_top.getAngleTibia() + w_down.getAngleTibia()) / 2 ));
     }
     
     /**
@@ -208,7 +221,7 @@ public class Patte {
      * 
      * @return objet structPatte contenant les angles du mouvement pour la position extreme top
      */
-    private static structPatte getPointTop(int angle, double longueur) {
+    public static structPatte getPointTop(int angle, double longueur) {
     	double longueurDemiCarre = ((longueur / 2) * (longueur / 2));
     	double w_dist1 = Math.sqrt( longueurDemiCarre + 19321 - (longueur * 139 * Math.cos(Math.toRadians(angle))) );
     	double w_dist2 = Math.sqrt( ((w_dist1 - 52) * (w_dist1 - 52)) + 13225 );
@@ -219,8 +232,8 @@ public class Patte {
     	else
     		angleCoxa = (char)(512 - (((Math.toDegrees(Math.acos( (((w_dist1 * w_dist1) + 19321 - longueurDemiCarre) / (2 * 139 * w_dist1)) ))) * 256) / 75));
     		
-    	char angleFemur = (char)(468 + ((((Math.toDegrees(Math.acos( ((w_dist2 * w_dist2) - 14280) / (134 * w_dist2) )) + Math.toDegrees(Math.acos(115 / w_dist2)) ) - 90) * 256) / 75));
-    	char angleTibia = (char)(512 - (((133 - Math.toDegrees(Math.acos( (22178 - (w_dist2 * w_dist2)) / 17822 ))) * 256) / 75));
+    	char angleFemur = (char)(556 + ((((Math.toDegrees(Math.acos( ((w_dist2 * w_dist2) - 13200) / (134 * w_dist2) )) + Math.toDegrees(Math.acos(115 / w_dist2)) ) - 90) * 256) / 75));
+    	char angleTibia = (char)(512 - (((138 - Math.toDegrees(Math.acos( (22178 - (w_dist2 * w_dist2)) / 17822 ))) * 256) / 75)); 
     	
     	return new structPatte(angleCoxa, angleFemur, angleTibia);
     }
@@ -247,8 +260,8 @@ public class Patte {
     	else
     		angleCoxa = (char)(512 + (((Math.toDegrees(Math.acos( (((w_dist1 * w_dist1) + 19321 - longueurDemiCarre) / (2 * 139 * w_dist1)) ))) * 256) / 75));
     		
-    	char angleFemur = (char)(468 + ((((Math.toDegrees(Math.acos( ((w_dist2 * w_dist2) - 14280) / (134 * w_dist2) )) + Math.toDegrees(Math.acos(115 / w_dist2)) ) - 90) * 256) / 75));
-    	char angleTibia = (char)(512 - (((133 - Math.toDegrees(Math.acos( (22178 - (w_dist2 * w_dist2)) / 17822 ))) * 256) / 75)); 
+    	char angleFemur = (char)(556 + ((((Math.toDegrees(Math.acos( ((w_dist2 * w_dist2) - 13200) / (134 * w_dist2) )) + Math.toDegrees(Math.acos(115 / w_dist2)) ) - 90) * 256) / 75));
+    	char angleTibia = (char)(512 - (((138 - Math.toDegrees(Math.acos( (22178 - (w_dist2 * w_dist2)) / 17822 ))) * 256) / 75));  
     	
     	return new structPatte(angleCoxa, angleFemur, angleTibia);
     }
@@ -264,7 +277,7 @@ public class Patte {
      * 
      * @return objet structPatte contenant les angles du mouvement de la step courante
      */
-    private structPatte getPoint(int angle, double longueur) {
+    public structPatte getPoint(int angle, double longueur) {
     	final int demiStep = (Robot.STEP_MAX/2);
     	final int quartStep = (Robot.STEP_MAX/4);
     	int w_step = Math.abs(step - demiStep);

@@ -68,10 +68,10 @@ public class hexapod {
     		// TODO : routine de test a effectuer ici JP
     		
     		/*System.out.println("** Tests droite Patte **");
-    		for(int i = 0; i < 360; i++)
+    		for(int i = 0; i < Robot.STEP_MAX; i++)
     		{
     			System.out.print(i + "|");
-    			structPatte test2 = Patte.getPointTop(i, 140);
+    			structPatte test2 = Patte.getPoint(90, 120, i);
     			System.out.println((int)test2.getAngleCoxa() + "|" + (int)test2.getAngleFemur() + "|" + (int)test2.getAngleTibia() );
     		}*/
     	}

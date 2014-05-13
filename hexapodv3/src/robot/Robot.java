@@ -24,8 +24,9 @@ import com.pi4j.io.gpio.RaspiPin;
 
 import java.lang.Math;
 import java.util.Timer;
-import java.util.TimerTask;
+//import java.util.TimerTask;
 
+import robot.PeriodicUpdateTask;
 import stdrpi.SerialRPi;
 
 /**
@@ -37,8 +38,8 @@ public class Robot {
 	public static final int STEP_MAX = 64;
 	public static final int DEAD_ZONE_JOY = 20;
 	public static final int OFFSET_ANGLE = 45;
-	public static final int LONGUEUR_MAX = 140;
-	public static final int VAL_UP_PATTE = 40;
+	public static final int LONGUEUR_MAX = 100;
+	public static final int VAL_UP_PATTE = 50;
 	
 	private int angleFL;
 	private int angleFR;
@@ -53,8 +54,7 @@ public class Robot {
 	private int longueurMR;
 	private int longueurBL;
 	private int longueurBR;
-	
-	private TimerTask processTask;
+
 	private Timer timer;
 	private long periodTimer;
 	
@@ -109,18 +109,20 @@ public class Robot {
         System.out.print("InitServo ... ");
         
         // Init Servomoteurs
+        structPatte w_middle = Patte.getPointMiddle();
         try {
-			front_left.setPosAll((char)512, (char)610, (char)300);
-			front_right.setPosAll((char)512, (char)610, (char)300);
-	        middle_left.setPosAll((char)512, (char)610, (char)300);
-	        middle_right.setPosAll((char)512, (char)610, (char)300);
-	        back_left.setPosAll((char)512, (char)610, (char)300);
-	        back_right.setPosAll((char)512, (char)610, (char)300);
+			front_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
+			front_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
+	        middle_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
+	        middle_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
+	        back_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
+	        back_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
         
         System.out.println(" OK");
+        System.out.println("angleCoxa = " + (int)w_middle.getAngleCoxa() + " angleFemur = " + (int)w_middle.getAngleFemur() + " angleTibia = " + (int)w_middle.getAngleTibia());
         
         // Valeurs temporaires
         //minHauteurPatte = 10;   // Defini hauteur de la base hexapod
@@ -128,16 +130,8 @@ public class Robot {
         
         // Definition de l'handle
         handle = this;
-        
-        // Set du timer d'execution des steps
-        processTask = new TimerTask() {
-	        public void run()
-	        {
-	            System.out.printf("ProcessTask");
-	            sendDirectionsPattes();
-	        }
-        };
-        periodTimer = 100;
+
+        periodTimer = 0;
         timer = new Timer();
         //timer.schedule(new TimerTask(sendDirectionsPattes()), 1000, periodTimer);
     }
@@ -152,9 +146,9 @@ public class Robot {
     	int w_x = x_joy;
     	int w_y = y_joy;
     	int w_z = z_joy;
-    	
+
     	int angleLeftJoy = ArcTanDeg(w_x, w_y);
-    	System.out.println("angleJoy = " + angleLeftJoy);
+    	
     	
     	// TODO calcul module
 
@@ -177,7 +171,7 @@ public class Robot {
     			angleMR		= (angleLeftJoy + 180) % 360;
     			longueurMR	= LONGUEUR_MAX;
     	        
-    			angleBL		= (angleLeftJoy - OFFSET_ANGLE) % 360;
+    			angleBL		= ((angleLeftJoy - OFFSET_ANGLE) + 360) % 360;
     			longueurBL	= LONGUEUR_MAX;
     	        
     			angleBR		= (angleLeftJoy + OFFSET_ANGLE + 180) % 360;
@@ -191,28 +185,27 @@ public class Robot {
     		// TODO avec CIR
     	}
     	
+    	System.out.println("angleJoy = " + angleLeftJoy + " w_timer = " + w_periodTimer);
+    	
     	if(w_periodTimer != periodTimer)
     	{    		
     		if(periodTimer != 0)
     			timer.cancel();
     		
     		if(w_periodTimer != 0)
-    			timer.schedule(processTask, 0, periodTimer);
+    		{
+    			timer = new Timer();
+    			timer.schedule(new PeriodicUpdateTask(), 0, w_periodTimer);
+    		}
     		
     		periodTimer = w_periodTimer;
     	}
-    	
-    	//System.out.println("timer = " + periodTimer);
     }
     
     /**
      * Methode cyclique permettant de mettre a jour les pattes (step + 1)
      */
     public void sendDirectionsPattes() {
-    	// TODO : methode appelle toute les ...ms (1step)
-    	// Step ==> 0 - 127
-    	
-    	
     	// Mise a jour des patte
     	if( (x_joy == 0) && (y_joy == 0) && (z_joy == 0) )
     	{
