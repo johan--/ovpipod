@@ -98,41 +98,44 @@ public class RobotWebSocketHandler {
     	
     	if(coord.length != 2)
     		System.out.println("MSG : " + message);
-    	/*else
-    		System.out.println("COORD " + coord[0] + ": " + coord[1]);*/
-    	
-    	switch(coord[0])
-    	{
-    		case "xl":
-    			// joystick horizontal gauche
-        		Robot.getHandle().MouvementX(Integer.parseInt(coord[1]));
-        		break;
-    		case "yl":
-    			// joystick vertical gauche
-        		Robot.getHandle().MouvementY(Integer.parseInt(coord[1]));
-        		break;
-    		case "xr":
-    			// joystick horizontal droit
-        		Robot.getHandle().MouvementZ(Integer.parseInt(coord[1]));
-    			break;
-    		case "yr":
-    			// joystick vertical droit
-        		//Robot.getHandle().Mouvement?(Integer.parseInt(coord[1]));
-    			break;
-    		case "bt":
-    			// boutons gamepads
-    			// TODO
-    			break;
-    		case "l2":
-    			//
-    			// TODO
-    			break;
-    		case "r2":
-    			//
-    			// TODO
-    			break;
-    		default:
-    			System.out.println("La donnee recu n'est pas un mouvement correct : " + coord[0]);
-    	}
+    	else
+	    	switch(coord[0])
+	    	{
+	    		case "xl":
+	    			// joystick horizontal gauche
+	        		Robot.getHandle().MouvementX(Integer.parseInt(coord[1]));
+	        		break;
+	    		case "yl":
+	    			// joystick vertical gauche
+	        		Robot.getHandle().MouvementY(Integer.parseInt(coord[1]));
+	        		break;
+	    		case "xr":
+	    			// joystick horizontal droit
+	        		Robot.getHandle().MouvementZ(Integer.parseInt(coord[1]));
+	    			break;
+	    		case "yr":
+	    			// joystick vertical droit
+	        		//Robot.getHandle().Mouvement?(Integer.parseInt(coord[1]));
+	    			break;
+	    		case "bt":
+	    			// boutons gamepads
+	    			if(Integer.parseInt(coord[1]) == 8)
+	    			{
+	    				System.out.println("RESET Robot");
+	    				Robot.getHandle().originRobot();
+	    			}
+	    			// TODO
+	    			break;
+	    		case "l2":
+	    			//
+	    			// TODO
+	    			break;
+	    		case "r2":
+	    			//
+	    			// TODO
+	    			break;
+	    		default:
+	    			System.out.println("La donnee recu n'est pas un mouvement correct : " + coord[0]);
+	    	}
     }
 }

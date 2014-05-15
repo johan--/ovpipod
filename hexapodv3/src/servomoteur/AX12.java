@@ -38,23 +38,35 @@ public class AX12 extends ServoMoteur {
     @Override
     public void setPositionExtrapol(char angle, char vitesse) throws Exception {
         if(!testAngle(angle))
-            throw new Exception("Erreur angle servomoteur");
- 
+            throw new Exception("Erreur angle servomoteur : " + angle);
+        if(!testVitesse(vitesse))
+            throw new Exception("Erreur vitesse servomoteur : " + vitesse);
+        
+        
+        // Position the output of a Dynamixel actuator with an ID of 0 to 180° with an angular velocity of 57 RPM
+        //
+        // Set address 0x1E (goal position) to 0x200 and Address 0x20 (moving speed) to 0x200
+        // Instruction = WRITE_DATA, Address = 0x1E, DATA = 0x00, 0x02, 0x00, 0x02 
+        //
+        //FF FF 00 07 03 1E 00 02 00 02 D3 (LEN:011)
+        
         // constitution de la trame RS232
-        char data[] = new char[9];
+        char data[] = new char[11];
         data[0] = 0xFF;									// trame init
         data[1] = 0xFF;									// trame init
         data[2] = IDServo;								// ID du servo a controler
-        data[3] = 0x05;									// Execute une action
-        data[4] = 0x03;									// Longeur de la trame
-        data[5] = 0x1D;									// Command Slope
+        data[3] = 0x07;									// Longueur de la trame
+        data[4] = 0x03;									// Execute une action
+        data[5] = 0x1E;									// Command move
         data[6] = (char)(angle & 0xFF);					// char mouvement poid faible
         data[7] = (char)((angle & 0xFF00) >> 8);		// char mouvement poid fort
-        data[8] = CalcCRC(data);						// CRC
+        data[8] = (char)(vitesse & 0xFF);				// char vitesse poid faible
+        data[9] = (char)((vitesse & 0xFF00) >> 8);		// char vitesse poid fort
+        data[10] = CalcCRC(data);						// CRC
         
         // TODO : verifier la trame pour la vitesse progressive
         
         // envoi de la trame
-        serialPi.send(data, 9);
+        serialPi.send(data, 11);
     }
 }

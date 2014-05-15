@@ -123,6 +123,7 @@
 				joyYL = 0;
 				joyXR = 0;
 				joyYR = 0;
+				boutons = 0;
 			}
 			else
 			{
@@ -181,9 +182,12 @@
 		socket.send('yl:' + joyYL);
 		socket.send('xr:' + joyXR);
 		socket.send('yr:' + joyYR);
-		socket.send('bt:' + boutons);
-		socket.send('l2:' + L2);
-		socket.send('r2:' + R2);
+		if(!typeJoystick)
+		{
+			socket.send('bt:' + boutons);
+			socket.send('l2:' + L2);
+			socket.send('r2:' + R2);
+		}
 	}, 200);
 </script></body>
 </html>

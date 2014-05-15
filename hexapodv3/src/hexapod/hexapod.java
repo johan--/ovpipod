@@ -74,6 +74,15 @@ public class hexapod {
     			structPatte test2 = Patte.getPoint(90, 120, i);
     			System.out.println((int)test2.getAngleCoxa() + "|" + (int)test2.getAngleFemur() + "|" + (int)test2.getAngleTibia() );
     		}*/
+    		double w_xCIR;
+    		double w_yCIR;
+    		
+    		w_xCIR = Math.round( ( (Math.cos(Math.toRadians( 90 + 90 )) * 35700 ) / 20) * 100) / 100;
+    		w_yCIR = Math.round( ( (Math.sin(Math.toRadians( 90 + 90 )) * 35700 ) / 20) * 100) / 100;
+    		
+    		System.out.println("x CIR = " + w_xCIR + " y CIR = " + w_yCIR);
+    		
+    		//System.out.println(Robot.getLongueurMovCIR( (float)239, (float)269.235956));
     	}
     	else
     	{

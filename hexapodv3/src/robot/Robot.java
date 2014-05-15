@@ -35,11 +35,12 @@ import stdrpi.SerialRPi;
  * @author Jeremy HERGAULT, Jean-Phillipe HAYES
  */
 public class Robot {
-	public static final int STEP_MAX = 64;
-	public static final int DEAD_ZONE_JOY = 20;
+	public static final int STEP_MAX = 32;
+	public static final int DEAD_ZONE_JOY = 30;
 	public static final int OFFSET_ANGLE = 45;
 	public static final int LONGUEUR_MAX = 100;
-	public static final int VAL_UP_PATTE = 50;
+	public static final int VAL_UP_PATTE = 80;
+	public static final int VAL_PHI_CIR = 60945;
 	
 	private int angleFL;
 	private int angleFR;
@@ -57,6 +58,8 @@ public class Robot {
 
 	private Timer timer;
 	private long periodTimer;
+	
+	private char vitesseServomoteurs;
 	
     //private int minHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont pose
     //private int maxHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont leve
@@ -109,20 +112,15 @@ public class Robot {
         System.out.print("InitServo ... ");
         
         // Init Servomoteurs
-        structPatte w_middle = Patte.getPointMiddle();
+        originRobot();
+        
         try {
-			front_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
-			front_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
-	        middle_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
-	        middle_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
-	        back_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
-	        back_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia());
-		} catch (Exception e) {
+			Thread.sleep(600);
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
         
         System.out.println(" OK");
-        System.out.println("angleCoxa = " + (int)w_middle.getAngleCoxa() + " angleFemur = " + (int)w_middle.getAngleFemur() + " angleTibia = " + (int)w_middle.getAngleTibia());
         
         // Valeurs temporaires
         //minHauteurPatte = 10;   // Defini hauteur de la base hexapod
@@ -132,8 +130,7 @@ public class Robot {
         handle = this;
 
         periodTimer = 0;
-        timer = new Timer();
-        //timer.schedule(new TimerTask(sendDirectionsPattes()), 1000, periodTimer);
+        vitesseServomoteurs = 512;
     }
     
     /**
@@ -146,16 +143,25 @@ public class Robot {
     	int w_x = x_joy;
     	int w_y = y_joy;
     	int w_z = z_joy;
-
-    	int angleLeftJoy = ArcTanDeg(w_x, w_y);
     	
-    	
-    	// TODO calcul module
+    	//System.out.println("val coord : " + w_x + ", " + w_y + ", " + w_z);
 
+    	int moduleLeftJoy = module(w_x, w_y);
+    	int angleLeftJoy = arcTanDeg(w_x, w_y);
+    	
+    	if(moduleLeftJoy <= 180)
+    	{
+    		w_periodTimer = 100;
+    		vitesseServomoteurs = 256;
+    	}
+    	else
+    	{
+    		w_periodTimer = 60;
+    		vitesseServomoteurs = 512;
+    	}
+    		
     	if(w_z == 0)
     	{
-    		// TODO sans CIR
-    		
     		if( (w_x != 0) || (w_y != 0) )
     		{
     			// Mouvement sans CIR
@@ -182,10 +188,85 @@ public class Robot {
     	}
     	else
     	{
-    		// TODO avec CIR
+    		if((w_x != 0) || (w_y != 0))
+    		{
+	    		int w_phiCIR;
+	    		int w_signJoyLeft;
+	    		
+	    		if(w_z > 0)
+	    		{
+	    			w_phiCIR = -90;
+	    			w_signJoyLeft = 1 /*-1*/;
+	    		}
+	    		else
+	    		{
+	    			w_phiCIR = 90;
+	    			w_signJoyLeft = -1;
+	    		}
+	    		
+	    		float w_xCIR = Math.round( ( (Math.cos(Math.toRadians( angleLeftJoy + w_phiCIR )) * VAL_PHI_CIR ) / (w_signJoyLeft * w_z)) * 100) / 100;
+	    		float w_yCIR = Math.round( ( (Math.sin(Math.toRadians( angleLeftJoy + w_phiCIR )) * VAL_PHI_CIR ) / (w_signJoyLeft * w_z)) * 100) / 100;
+	    		
+	    		float w_distCIR = module(w_xCIR, w_yCIR);
+	    		
+	    		// Calcul distances (toujour positif)
+	    		float w_distFL = (float)Math.sqrt( ((158 + w_xCIR) * (158 + w_xCIR)) + ((218 - w_yCIR) * (218 - w_yCIR)) );
+	    		float w_distFR = (float)Math.sqrt( ((158 - w_xCIR) * (158 - w_xCIR)) + ((218 - w_yCIR) * (218 - w_yCIR)) );
+	    		float w_distML = (float)Math.sqrt( ((239 + w_xCIR) * (239 + w_xCIR)) + (w_yCIR * w_yCIR) );
+	    		float w_distMR = (float)Math.sqrt( ((239 - w_xCIR) * (239 - w_xCIR)) + (w_yCIR * w_yCIR) );
+	    		float w_distBL = (float)Math.sqrt( ((158 + w_xCIR) * (158 + w_xCIR)) + ((218 + w_yCIR) * (218 + w_yCIR)) );
+	    		float w_distBR = (float)Math.sqrt( ((158 - w_xCIR) * (158 - w_xCIR)) + ((218 + w_yCIR) * (218 + w_yCIR)) );
+	    		
+	    		float w_distMax = getMax(w_distFL, w_distFR, w_distML, w_distMR, w_distBL, w_distBR); 
+	    		
+	    		angleFL		= (angleLeftJoy + (w_signJoyLeft * getAngleCIR(w_distCIR, w_distFL, (float)269.235956)) + OFFSET_ANGLE + 360) % 360;
+				longueurFL	= getLongueurMovCIR(w_distFL, w_distMax);
+				
+				angleFR		= (angleLeftJoy + (w_signJoyLeft * getAngleCIR(w_distCIR, w_distFR, (float)269.235956)) - OFFSET_ANGLE + 180) % 360;
+				longueurFR	= getLongueurMovCIR(w_distFR, w_distMax);
+		        
+				angleML		= (angleLeftJoy + (w_signJoyLeft * getAngleCIR(w_distCIR, w_distML, (float)239)) + 360) % 360;
+				longueurML	= getLongueurMovCIR(w_distML, w_distMax);
+		        
+				angleMR		= (angleLeftJoy + (w_signJoyLeft * getAngleCIR(w_distCIR, w_distMR, (float)239)) + 180) % 360;
+				longueurMR	= getLongueurMovCIR(w_distMR, w_distMax);
+		        
+				angleBL		= ((angleLeftJoy + (w_signJoyLeft * getAngleCIR(w_distCIR, w_distBL, (float)269.235956)) - OFFSET_ANGLE) + 360) % 360;
+				longueurBL	= getLongueurMovCIR(w_distBL, w_distMax);
+		        
+				angleBR		= (angleLeftJoy + (w_signJoyLeft * getAngleCIR(w_distCIR, w_distBR, (float)269.235956)) + OFFSET_ANGLE + 180) % 360;
+				longueurBR	= getLongueurMovCIR(w_distBR, w_distMax);
+    		}
+    		else
+    		{
+    			// TODO CIR robot stop
+    			
+    			int offsetAngleCIR = 0;
+    			
+    			if(w_z > 0)
+    				offsetAngleCIR = 180;
+    			
+    			angleFL		= 225 - offsetAngleCIR;
+				longueurFL	= LONGUEUR_MAX;
+				
+				angleFR		= 315 - offsetAngleCIR;
+				longueurFR	= LONGUEUR_MAX;
+		        
+				angleML		= 270 - offsetAngleCIR;
+				longueurML	= getLongueurMovCIR((float)239, (float)269.235956);
+		        
+				angleMR		= 270 - offsetAngleCIR;
+				longueurMR	= getLongueurMovCIR((float)239, (float)269.235956);
+		        
+				angleBL		= 315 - offsetAngleCIR;
+				longueurBL	= LONGUEUR_MAX;
+		        
+				angleBR		= 225 - offsetAngleCIR;
+				longueurBR	= LONGUEUR_MAX;
+    		}
     	}
     	
-    	System.out.println("angleJoy = " + angleLeftJoy + " w_timer = " + w_periodTimer);
+    	//System.out.println("angleJoy = " + angleLeftJoy + " w_timer = " + w_periodTimer);
     	
     	if(w_periodTimer != periodTimer)
     	{    		
@@ -214,12 +295,12 @@ public class Robot {
     	else
     	{
 	        try {
-		    	front_left.upDateDroiteMov(angleFL, longueurFL);
-				front_right.upDateDroiteMov(angleFR, longueurFR);
-		        middle_left.upDateDroiteMov(angleML, longueurML);
-		        middle_right.upDateDroiteMov(angleMR, longueurMR);
-		        back_left.upDateDroiteMov(angleBL, longueurBL);
-		        back_right.upDateDroiteMov(angleBR, longueurBR);
+		    	front_left.upDateDroiteMov(angleFL, longueurFL, vitesseServomoteurs);
+				front_right.upDateDroiteMov(angleFR, longueurFR, vitesseServomoteurs);
+		        middle_left.upDateDroiteMov(angleML, longueurML, vitesseServomoteurs);
+		        middle_right.upDateDroiteMov(angleMR, longueurMR, vitesseServomoteurs);
+		        back_left.upDateDroiteMov(angleBL, longueurBL, vitesseServomoteurs);
+		        back_right.upDateDroiteMov(angleBR, longueurBR, vitesseServomoteurs);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -231,6 +312,31 @@ public class Robot {
      */
     public static Robot getHandle() {
     	return handle;
+    }
+    
+    /**
+	 * Methode permettant de mettre le robot en position de reference
+	 */
+    public void originRobot() {
+    	structPatte w_middle = Patte.getPointMiddle();
+    	
+    	front_left.resetStep();
+		front_right.resetStep();
+        middle_left.resetStep();
+        middle_right.resetStep();
+        back_left.resetStep();
+        back_right.resetStep();
+    	
+        try {
+			front_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia(), (char)256);
+			front_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia(), (char)256);
+	        middle_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia(), (char)256);
+	        middle_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia(), (char)256);
+	        back_left.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia(), (char)256);
+	        back_right.setPosAll(w_middle.getAngleCoxa(), w_middle.getAngleFemur(), w_middle.getAngleTibia(), (char)256);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
     
 	/**
@@ -284,6 +390,71 @@ public class Robot {
     	}
     }
     
+    public static float getMax(float val1, float val2, float val3, float val4, float val5, float val6) {
+    	float valeurMax;
+    	
+    	if(val1 > val2)
+    		valeurMax = val1;
+    	else
+    		valeurMax = val2;
+    	
+    	if(valeurMax < val3)
+    		valeurMax = val3;
+    	
+    	if(valeurMax < val4)
+    		valeurMax = val4;
+    	
+    	if(valeurMax < val5)
+    		valeurMax = val5;
+    	
+    	if(valeurMax < val6)
+    		valeurMax = val6;
+    	
+    	return valeurMax;
+    }
+    
+    private static int getLongueurMovCIR(float dist, float distMax) {
+    	return (int)((LONGUEUR_MAX * dist) / distMax);
+    }
+    
+    // distCIR = 0, distHypPatte = distPatte
+    
+    private static int getAngleCIR(float distCIR, float distHypPatte, float distPatte) {
+    	return (int)Math.round(Math.acos( ((distHypPatte * distHypPatte) + (distCIR * distCIR) - (distPatte * distPatte)) / (2 * distHypPatte * distCIR) ));
+    }
+    
+    /**
+	 * Methode permettant de retourner un module a partir de deux coordonnees cartesiennes
+	 * 
+	 * @param x
+	 * 			Valeur en x de la coordonnee cartesienne
+	 * 
+	 * @param y
+	 * 			Valeur en y de la coordonnee cartesienne
+	 * 
+	 * @return module par rapport aux coordonnees
+	 */
+    private static float module(float x, float y)
+    {
+    	return (float)(Math.sqrt(x*x + y*y) );
+    }
+    
+    /**
+	 * Methode permettant de retourner un module a partir de deux coordonnees cartesiennes
+	 * 
+	 * @param x
+	 * 			Valeur en x de la coordonnee cartesienne
+	 * 
+	 * @param y
+	 * 			Valeur en y de la coordonnee cartesienne
+	 * 
+	 * @return module par rapport aux coordonnees
+	 */
+    private static int module(int x, int y)
+    {
+    	return (int)(Math.round( Math.sqrt(x*x + y*y) ));
+    }
+    
     /**
 	 * Methode permettant de retourner un angle a partir de deux coordonnees cartesiennes
 	 * 
@@ -295,7 +466,7 @@ public class Robot {
 	 * 
 	 * @return Angle en degre par rapport aux coordonnees
 	 */
-    public static int ArcTanDeg(int x, int y)
+    private static int arcTanDeg(int x, int y)
     {
     	return (int)((Math.round(Math.toDegrees(Math.atan2(y, x))) + 360) % 360);
     }

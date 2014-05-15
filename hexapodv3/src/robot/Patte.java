@@ -27,6 +27,7 @@ import stdrpi.SerialRPi;
  * @version 3.1
  */
 public class Patte {
+	private int initStep;
 	private int step;
 	
     private ServoMoteur servoCoxa;
@@ -48,6 +49,7 @@ public class Patte {
      * 			ID du servomoteur Tibia de la patte
      */
     public Patte(SerialRPi liaison, int Step, char IDCoxa, char IDFemur, char IDTibia) {
+    	initStep = Step;
     	step = Step;
     	
         try {
@@ -88,16 +90,39 @@ public class Patte {
      * Methode de definition des positions des servomoteurs
      * 
      * @param PosCoxa
-     * 			Position du servomoteur Coxa de la patte
+     * 			Position du servomoteur Coxa de la patte de 0 a 0FFF (0 a 1024)
+     * 
      * @param PosFemur
-     * 			Position du servomoteur Femur de la patte
+     * 			Position du servomoteur Femur de la patte de 0 a 0FFF (0 a 1024)
+     * 
      * @param PosTibia
-     * 			Position du servomoteur Tibia de la patte
+     * 			Position du servomoteur Tibia de la patte de 0 a 0FFF (0 a 1024)
      */
     public void setPosAll(char PosCoxa, char PosFemur, char PosTibia) throws Exception {
     	setPosCoxa(PosCoxa);
     	setPosFemur(PosFemur);
     	setPosTibia(PosTibia);
+    }
+    
+    /**
+     * Methode de definition des positions des servomoteurs en indiquant la vitesse
+     * 
+     * @param PosCoxa
+     * 			Position du servomoteur Coxa de la patte de 0 a 0FFF (0 a 1024)
+     * 
+     * @param PosFemur
+     * 			Position du servomoteur Femur de la patte de 0 a 0FFF (0 a 1024)
+     * 
+     * @param PosTibia
+     * 			Position du servomoteur Tibia de la patte de 0 a 0FFF (0 a 1024)
+     * 
+     * @param vitesse
+     * 			Vitesse des servomoteur de 0 a 0FFF (0 a 1024)
+     */
+    public void setPosAll(char PosCoxa, char PosFemur, char PosTibia, char vitesse) throws Exception {
+    	setPosCoxa(PosCoxa, vitesse);
+    	setPosFemur(PosFemur, vitesse);
+    	setPosTibia(PosTibia, vitesse);
     }
     
     /**
@@ -116,7 +141,7 @@ public class Patte {
      * @param longueur
      * 			Longueur de la droite de mouvement
      */
-    public void upDateDroiteMov(int angle, double longueur) throws Exception {
+    public void upDateDroiteMov(int angle, double longueur, char vitesse) throws Exception {
     	if(!testAngle(angle))
     		throw new Exception("Erreur angle droite mouvement : " + angle);
     	if(!testLongueur(longueur))
@@ -128,55 +153,105 @@ public class Patte {
     		w_position = getPoint(angle, longueur);
     	else
     		w_position = getPointMiddle();
-    	
-    	setPosCoxa(w_position.getAngleCoxa());
-    	setPosFemur(w_position.getAngleFemur());
-    	setPosTibia(w_position.getAngleTibia());
-    	/*servoCoxa.setPositionExtrapol(w_position.getAngleCoxa(), vitesse);
+
+    	servoCoxa.setPositionExtrapol(w_position.getAngleCoxa(), vitesse);
     	servoFemur.setPositionExtrapol(w_position.getAngleFemur(), vitesse);
-    	servoTibia.setPositionExtrapol(w_position.getAngleTibia(), vitesse);*/
+    	servoTibia.setPositionExtrapol(w_position.getAngleTibia(), vitesse);
     	
     	step++;
-    	if(step >= Robot.STEP_MAX)
+    	if(step > Robot.STEP_MAX)
     		step = 0;
     }
     
     /**
-     * Methode de definition de la position du servomoteur Coxa de la patte
+     * Methode de definition de la position du servomoteur Femur de la patte
      * 
      * @param position
-     * 			Angle du servomoteur de 0 a 0FFF
+     * 			Angle du servomoteur de 0 a 0FFF (0 a 1024)
      */
     public void setPosCoxa(char position) throws Exception {
     	if((position < 405) || (position > 620))
     		throw new Exception("Erreur angle servomoteur Coxa : " + (int)position);
+
     	servoCoxa.setPosition(position);
+    }
+    
+    /**
+     * Methode de definition de la position du servomoteur Coxa de la patte en indiquant la vitesse
+     * 
+     * @param position
+     * 			Angle du servomoteur de 0 a 0FFF (0 a 1024)
+     * 
+     * @param vitesse
+     * 			Vitesse du servomoteur de 0 a 0FFF (0 a 1024)
+     */
+    public void setPosCoxa(char position, char vitesse) throws Exception {
+    	if((position < 405) || (position > 620))
+    		throw new Exception("Erreur angle servomoteur Coxa : " + (int)position);
+
+    	servoCoxa.setPositionExtrapol(position, vitesse);
     }
 
     /**
      * Methode de definition de la position du servomoteur Femur de la patte
      * 
      * @param position
-     * 			Angle du servomoteur de 0 a 0FFF
+     * 			Angle du servomoteur de 0 a 0FFF (0 a 1024)
      */
     public void setPosFemur(char position) throws Exception {
-    	if((position < 316) || (position > 690))
+    	if((position < 300) || (position > 700))
     		throw new Exception("Erreur angle servomoteur Femur : " + (int)position);
 
     	servoFemur.setPosition(position);
     }
     
     /**
+     * Methode de definition de la position du servomoteur Femur de la patte en indiquant la vitesse
+     * 
+     * @param position
+     * 			Angle du servomoteur de 0 a 0FFF (0 a 1024)
+     * 
+     * @param vitesse
+     * 			Vitesse du servomoteur de 0 a 0FFF (0 a 1024)
+     */
+    public void setPosFemur(char position, char vitesse) throws Exception {
+    	if((position < 300) || (position > 700))
+    		throw new Exception("Erreur angle servomoteur Coxa : " + (int)position);
+
+    	servoFemur.setPositionExtrapol(position, vitesse);
+    }
+    
+    /**
      * Methode de definition de la position du servomoteur Tibia de la patte
      * 
      * @param position
-     * 			Angle du servomoteur de 0 a 0FFF
+     * 			Angle du servomoteur de 0 a 0FFF (0 a 1024)
      */
     public void setPosTibia(char position) throws Exception {
-    	if((position < 205) || (position > 717))
+    	if((position < 220) || (position > 710))
     		throw new Exception("Erreur angle servomoteur Tibia : " + (int)position);
 
     	servoTibia.setPosition(position);
+    }
+    
+    /**
+     * Methode de definition de la position du servomoteur Coxa de la patte en indiquant la vitesse
+     * 
+     * @param position
+     * 			Angle du servomoteur de 0 a 0FFF (0 a 1024)
+     * 
+     * @param vitesse
+     * 			Vitesse du servomoteur de 0 a 0FFF (0 a 1024)
+     */
+    public void setPosTibia(char position, char vitesse) throws Exception {
+    	if((position < 220) || (position > 710))
+    		throw new Exception("Erreur angle servomoteur Coxa : " + (int)position);
+
+    	servoTibia.setPositionExtrapol(position, vitesse);
+    }
+    
+    public void resetStep() {
+    	step = initStep;
     }
     
     /**
@@ -189,7 +264,7 @@ public class Patte {
      */
     private static structPatte upPatte(structPatte position) {
     	position.setAngleFemur((char)(position.getAngleFemur() - Robot.VAL_UP_PATTE));
-    	position.setAngleTibia((char)(position.getAngleTibia() - Robot.VAL_UP_PATTE));
+    	//position.setAngleTibia((char)(position.getAngleTibia() - Robot.VAL_UP_PATTE));
     	return position;
     }
     
@@ -198,17 +273,16 @@ public class Patte {
      */
     public static structPatte getPointMiddle() {
     	return new structPatte((char)512, (char)575, (char)362);
-    	//return getAlterMiddle();
     }
     
-    public static structPatte getAlterMiddle() {
+    /*public static structPatte getAlterMiddle() {
     	structPatte w_top = getPointTop(0, 100);
     	structPatte w_down = getPointTop(180, 100);
     	
     	return new structPatte((char)512,
     			(char)((w_top.getAngleFemur() + w_down.getAngleFemur()) / 2 ),
     			(char)((w_top.getAngleTibia() + w_down.getAngleTibia()) / 2 ));
-    }
+    }*/
     
     /**
      * Methode renvoyant les angles des servomoteurs pour la position top
@@ -283,8 +357,6 @@ public class Patte {
     	int w_step = Math.abs(step - demiStep);
     	structPatte w_middle = getPointMiddle();
     	structPatte w_extrem;
-    	
-    	//System.out.print(step + "|");
 
     	if(w_step < quartStep)
     	{
@@ -297,7 +369,7 @@ public class Patte {
     	}
     	else
     	{
-    		if(step > demiStep)
+    		if((step > demiStep) && (step < Robot.STEP_MAX))
     			return upPatte(w_middle);
     		else
     			return w_middle;
@@ -308,7 +380,7 @@ public class Patte {
     			(char)( (((quartStep - w_step) * w_extrem.getAngleTibia()) + (w_step * w_middle.getAngleTibia())) / quartStep ));
     	
     	// On leve la patte pour pisser
-    	if(step > demiStep)
+    	if((step > demiStep) && (step < Robot.STEP_MAX))
     		w_position = upPatte(w_position);
     	
     	return w_position;
