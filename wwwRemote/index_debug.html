@@ -163,18 +163,30 @@
 			}
 		}
 		
-		outputEl.innerHTML	= '<b>' + etatWs + '<br />'
+		outputEl.innerHTML	= '<b>etat WS:</b> ' + etatWs + '<br />'
+			+ '<b>msg WS:</b> ' + msgWs + '<br />'
+			+ '<b>touch:</b> ' + VirtualJoystick.touchScreenAvailable() + '<br />'
+			+ '<b>JoystickLeft:</b> '
+			+ ' dx:'+ joyXL
+			+ ' dy:'+ joyYL
+			+ '<br /><b>JoystickRight:</b> '
+			+ ' dx:'+ joyXR
+			+ ' dy:'+ joyYR
+			+ '<br /><b>boutons</b> '
+			+ ' bouton:'+ boutons
+			+ ' L2:'+ L2
+			+ ' R2:'+ R2
 
 		// envoi coord joystick
 		socket.send('xl:' + joyXL);
 		socket.send('yl:' + joyYL);
 		socket.send('xr:' + joyXR);
-		//socket.send('yr:' + joyYR);
+		socket.send('yr:' + joyYR);
 		if(!typeJoystick)
 		{
 			socket.send('bt:' + boutons);
-			//socket.send('l2:' + L2);
-			//socket.send('r2:' + R2);
+			socket.send('l2:' + L2);
+			socket.send('r2:' + R2);
 		}
 	}, 200);
 </script></body>
