@@ -12,7 +12,7 @@ L'installation peut être effectué sur un Raspberry Pi faisant tourner Raspbian
 
 h3. Paquets nécessaires
 
-@apt-get install oracle-java7-jdk hostapd udhcpd@
+@apt-get install oracle-java7-jdk hostapd udhcpd lighttpd@
 
 hostapd, et udhcpd servent si vous voulez mettre en place un hotspot wifi avec le Raspberry Pi
 
