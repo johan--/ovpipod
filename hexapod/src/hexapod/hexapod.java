@@ -61,45 +61,20 @@ public class hexapod {
 	    	choix = sc.nextInt();
 	    	sc.close();
     	}
-    	
-    	if(choix == 7)
-    	{
-    		System.out.println("**** Tests unitaires du programme OVPIPOD V3 ****");
-    		// TODO : routine de test a effectuer ici JP
-    		
-    		/*System.out.println("** Tests droite Patte **");
-    		for(int i = 0; i < Robot.STEP_MAX; i++)
-    		{
-    			System.out.print(i + "|");
-    			structPatte test2 = Patte.getPoint(90, 120, i);
-    			System.out.println((int)test2.getAngleCoxa() + "|" + (int)test2.getAngleFemur() + "|" + (int)test2.getAngleTibia() );
-    		}*/
-    		double w_xCIR;
-    		double w_yCIR;
-    		
-    		w_xCIR = Math.round( ( (Math.cos(Math.toRadians( 90 + 90 )) * 35700 ) / 20) * 100) / 100;
-    		w_yCIR = Math.round( ( (Math.sin(Math.toRadians( 90 + 90 )) * 35700 ) / 20) * 100) / 100;
-    		
-    		System.out.println("x CIR = " + w_xCIR + " y CIR = " + w_yCIR);
-    		
-    		//System.out.println(Robot.getLongueurMovCIR( (float)239, (float)269.235956));
-    	}
-    	else
-    	{
-	    	if(choix != 2) {
-		    	// create gpio controller
-		        final GpioController gpio = GpioFactory.getInstance();
-		        
-		        // Init du robot et attente instruction
-		        @SuppressWarnings("unused")
-				Robot Hexapod = new Robot(gpio);
-	    	}
+
+    	if(choix != 2) {
+	    	// create gpio controller
+	        final GpioController gpio = GpioFactory.getInstance();
 	        
-	    	if(choix != 1) {
-		        // Init serveur websocket
-		        WebSocketRobot jetty = new WebSocketRobot();
-		        jetty.start();
-	    	}
+	        // Init du robot et attente instruction
+	        @SuppressWarnings("unused")
+			Robot Hexapod = new Robot(gpio);
+    	}
+        
+    	if(choix != 1) {
+	        // Init serveur websocket
+	        WebSocketRobot jetty = new WebSocketRobot();
+	        jetty.start();
     	}
     }
     
@@ -111,6 +86,5 @@ public class hexapod {
     	System.out.println("\t- 1 : GPIO servomoteur raspberry pi");
     	System.out.println("\t- 2 : Jetty websocket");
     	System.out.println("\t- 3 : Lancement total");
-    	System.out.println("\t- 7 : Routine de test du programme");
     }
 }

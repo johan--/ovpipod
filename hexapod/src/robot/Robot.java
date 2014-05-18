@@ -35,7 +35,7 @@ import stdrpi.SerialRPi;
  * @author Jeremy HERGAULT, Jean-Phillipe HAYES
  */
 public class Robot {
-	public static final int STEP_MAX = 32;
+	public static final int STEP_MAX = 16;
 	public static final int DEAD_ZONE_JOY = 30;
 	public static final int OFFSET_ANGLE = 45;
 	public static final int LONGUEUR_MAX = 100;
@@ -142,15 +142,20 @@ public class Robot {
     	int moduleLeftJoy = module(w_x, w_y);
     	int angleLeftJoy = arcTanDeg(w_x, w_y);
     	
-    	if(moduleLeftJoy <= 180)
+    	if(moduleLeftJoy <= 120)
     	{
-    		w_periodTimer = 100;
+    		w_periodTimer = 120;
+    		vitesseServomoteurs = 128;
+    	}
+    	else if(moduleLeftJoy <= 200)
+    	{
+    		w_periodTimer = 60;
     		vitesseServomoteurs = 256;
     	}
     	else
     	{
-    		w_periodTimer = 60;
-    		vitesseServomoteurs = 512;
+    		w_periodTimer = 30;
+    		vitesseServomoteurs = 670;
     	}
     		
     	if(w_z == 0)
@@ -189,12 +194,12 @@ public class Robot {
 	    		if(w_z > 0)
 	    		{
 	    			w_phiCIR = -90;
-	    			w_signJoyLeft = 1 /*-1*/;
+	    			w_signJoyLeft = -1;
 	    		}
 	    		else
 	    		{
 	    			w_phiCIR = 90;
-	    			w_signJoyLeft = -1;
+	    			w_signJoyLeft = 1;
 	    		}
 	    		
 	    		float w_xCIR = Math.round( ( (Math.cos(Math.toRadians( angleLeftJoy + w_phiCIR )) * VAL_PHI_CIR ) / (w_signJoyLeft * w_z)) * 100) / 100;
@@ -231,7 +236,7 @@ public class Robot {
 				longueurBR	= getLongueurMovCIR(w_distBR, w_distMax);
     		}
     		else
-    		{    			
+    		{	
     			int offsetAngleCIR = 0;
     			
     			if(w_z > 0)
@@ -254,6 +259,17 @@ public class Robot {
 		        
 				angleBR		= 225 - offsetAngleCIR;
 				longueurBR	= LONGUEUR_MAX;
+				
+				if((w_z > 180) || (w_z < -180))
+				{
+					w_periodTimer = 120;
+					vitesseServomoteurs = 128;
+				}
+				else
+				{
+					w_periodTimer = 50;
+	    			vitesseServomoteurs = 384;
+				}
     		}
     	}
     	
