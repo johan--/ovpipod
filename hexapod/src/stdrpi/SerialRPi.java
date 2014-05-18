@@ -26,7 +26,6 @@ import com.pi4j.io.serial.SerialPortException;
 // Objet SerialRPi a partir de la lib pi4j
 // http://pi4j.com/example/serial.html
 
-
 /**
  * Classe SerialRPi genere a partir de la lib pi4j
  * http://pi4j.com/example/serial.html
@@ -75,6 +74,7 @@ public class SerialRPi {
      *
      * @param data
      * 			Tableau de char
+     * 
      * @param lenght
      * 			Nombre d'octets a envoyer (taille du tableau de char)
      */

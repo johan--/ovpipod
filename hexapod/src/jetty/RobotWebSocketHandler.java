@@ -124,15 +124,12 @@ public class RobotWebSocketHandler {
 	    				System.out.println("RESET Robot");
 	    				Robot.getHandle().originRobot();
 	    			}
-	    			// TODO
 	    			break;
 	    		case "l2":
-	    			//
-	    			// TODO
+	    			// gachette gauche
 	    			break;
 	    		case "r2":
-	    			//
-	    			// TODO
+	    			// gachette droite
 	    			break;
 	    		default:
 	    			System.out.println("La donnee recu n'est pas un mouvement correct : " + coord[0]);

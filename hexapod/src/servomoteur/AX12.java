@@ -31,9 +31,13 @@ public class AX12 extends ServoMoteur {
     }
     
     /**
-     * Methode changement d'angle selon une vitesse
-     * @param angle
+     * Methode de positionnement du servomoteur a une vitesse precise
+     * 
+     * @param angleFinal
+     * 			angle du servomoteur
+     * 
      * @param vitesse
+     * 			vitesse du servomoteur
      */
     @Override
     public void setPositionExtrapol(char angle, char vitesse) throws Exception {
@@ -41,14 +45,6 @@ public class AX12 extends ServoMoteur {
             throw new Exception("Erreur angle servomoteur : " + angle);
         if(!testVitesse(vitesse))
             throw new Exception("Erreur vitesse servomoteur : " + vitesse);
-        
-        
-        // Position the output of a Dynamixel actuator with an ID of 0 to 180° with an angular velocity of 57 RPM
-        //
-        // Set address 0x1E (goal position) to 0x200 and Address 0x20 (moving speed) to 0x200
-        // Instruction = WRITE_DATA, Address = 0x1E, DATA = 0x00, 0x02, 0x00, 0x02 
-        //
-        //FF FF 00 07 03 1E 00 02 00 02 D3 (LEN:011)
         
         // constitution de la trame RS232
         char data[] = new char[11];
@@ -63,8 +59,6 @@ public class AX12 extends ServoMoteur {
         data[8] = (char)(vitesse & 0xFF);				// char vitesse poid faible
         data[9] = (char)((vitesse & 0xFF00) >> 8);		// char vitesse poid fort
         data[10] = CalcCRC(data);						// CRC
-        
-        // TODO : verifier la trame pour la vitesse progressive
         
         // envoi de la trame
         serialPi.send(data, 11);

@@ -60,9 +60,6 @@ public class Robot {
 	private long periodTimer;
 	
 	private char vitesseServomoteurs;
-	
-    //private int minHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont pose
-    //private int maxHauteurPatte;				// Variable indiquant la hauteur des pattes lorsquelles sont leve
 
     // Valeurs en INT de -255 a 255 des joysticks
     private int x_joy;
@@ -115,16 +112,12 @@ public class Robot {
         originRobot();
         
         try {
-			Thread.sleep(600);
+			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
         
         System.out.println(" OK");
-        
-        // Valeurs temporaires
-        //minHauteurPatte = 10;   // Defini hauteur de la base hexapod
-        //maxHauteurPatte = 14;   // Defini hauteur montee des pattes lors du mouvement
         
         // Definition de l'handle
         handle = this;
@@ -238,9 +231,7 @@ public class Robot {
 				longueurBR	= getLongueurMovCIR(w_distBR, w_distMax);
     		}
     		else
-    		{
-    			// TODO CIR robot stop
-    			
+    		{    			
     			int offsetAngleCIR = 0;
     			
     			if(w_z > 0)
@@ -265,8 +256,6 @@ public class Robot {
 				longueurBR	= LONGUEUR_MAX;
     		}
     	}
-    	
-    	//System.out.println("angleJoy = " + angleLeftJoy + " w_timer = " + w_periodTimer);
     	
     	if(w_periodTimer != periodTimer)
     	{    		
@@ -318,7 +307,7 @@ public class Robot {
 	 * Methode permettant de mettre le robot en position de reference
 	 */
     public void originRobot() {
-    	structPatte w_middle = Patte.getPointMiddle();
+    	StructPatte w_middle = Patte.getPointMiddle();
     	
     	front_left.resetStep();
 		front_right.resetStep();
@@ -390,7 +379,30 @@ public class Robot {
     	}
     }
     
-    public static float getMax(float val1, float val2, float val3, float val4, float val5, float val6) {
+    /**
+	 * Methode donnant le maximum des valeurs passe en parametres
+	 * 
+	 * @param val1
+	 * 			Valeur 1 a tester
+	 * 
+	 * @param val2
+	 * 			Valeur 2 a tester
+	 * 
+	 * @param val3
+	 * 			Valeur 3 a tester
+	 * 
+	 * @param val4
+	 * 			Valeur 4 a tester
+	 * 
+	 * @param val5
+	 * 			Valeur 5 a tester
+	 * 
+	 * @param val6
+	 * 			Valeur 6 a tester
+	 * 
+	 * @return la valeur la plus eleve des valeurs passe en parametres
+	 */
+    private static float getMax(float val1, float val2, float val3, float val4, float val5, float val6) {
     	float valeurMax;
     	
     	if(val1 > val2)
@@ -413,12 +425,35 @@ public class Robot {
     	return valeurMax;
     }
     
+    /**
+	 * Methode retourant la longueur de la droite de mouvement pour le CIR
+	 * 
+	 * @param dist
+	 * 			Distance entre le CIR et la patte
+	 * 
+	 * @param distMax
+	 * 			Distance entre le CIR et la patte la plus eloigne
+	 * 
+	 * @return la valeur de la droite de mouvement
+	 */
     private static int getLongueurMovCIR(float dist, float distMax) {
     	return (int)((LONGUEUR_MAX * dist) / distMax);
     }
     
-    // distCIR = 0, distHypPatte = distPatte
-    
+    /**
+	 * Methode retourant l'angle de la droite de mouvement pour le CIR
+	 * 
+	 * @param distCIR
+	 * 			Distance entre le CIR et l'origine du robot
+	 * 
+	 * @param distHypPatte
+	 * 			Distance entre le CIR et la patte
+	 * 
+	 * @param distPatte
+	 * 			Distance entre la patte et l'origine du robot
+	 * 
+	 * @return la valeur de l'angle de la droite de mouvement
+	 */
     private static int getAngleCIR(float distCIR, float distHypPatte, float distPatte) {
     	return (int)Math.round(Math.acos( ((distHypPatte * distHypPatte) + (distCIR * distCIR) - (distPatte * distPatte)) / (2 * distHypPatte * distCIR) ));
     }

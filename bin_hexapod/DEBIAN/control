@@ -3,7 +3,7 @@ Version: 1.0
 Section: base
 Priority: optional
 Architecture: all
-Depends: bash, vlc, oracle-java7-jdk
+Depends: bash, vlc, oracle-java7-jdk, screen
 Maintainer: HERGAULT <jeremy.hergault@orange.fr>
 Description: Programme de control hexapod
 Homepage: https://github.com/reneca/ovpipod

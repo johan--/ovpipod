@@ -44,7 +44,11 @@ Supprimez ou commentez la ligne suivante :
 
 @T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100@
 
-h3. Paramétrage de vlc
+h3. Paramétrage de la PiCam et de vlc
+
+Si vous voulez que la camera n'active pas sa LED lorsqu'elle est active rajoutez au
+fichier `/boot/config.txt` :
+@disable_camera_led=1@
 
 Pour que vlc puisse être exécuté (en root), il faut modifier le fichier `/usr/bin/vlc`
 et remplacer
@@ -57,6 +61,12 @@ h3. Configuration du Raspberry Pi en Hotspot wifi
 
 Voir la manipulation à l'adresse suivante : "elinux RPI Wireless Hotspot":http://elinux.org/RPI-Wireless-Hotspot
 
+Pour la configuration de HostAPD, il faut nécessairement configurer le wifi en norme n,
+en rajoutant :
+
+@ieee80211n=1
+wmm_enabled=1@
+
 
 h3. Installation du programme
 
@@ -64,7 +74,8 @@ Le programme java necessite une machine JDK1.7.
 
 h4. Installation avec le paquet .deb
 
-Le fichier .deb se trouve a la racine du projet, et installe le programme hexapod et ajoute
+Le fichier .deb est a générer avec le script `makedeb.sh`. Une fois effectué, vous pouvez trouver
+le paquet hexapod.deb à la racine du projet. Ce paquet installe le programme hexapod et ajoute
 les scripts de démarrage automatique.
 
 

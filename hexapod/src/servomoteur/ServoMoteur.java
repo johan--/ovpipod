@@ -28,6 +28,15 @@ public abstract class ServoMoteur {
     protected SerialRPi serialPi;
     protected char IDServo;
     
+    /**
+     * Constructeur de l'objet ServoMoteur
+     * 
+     * @param liaison
+     * 				Reference de la liaison RS485
+     * 
+     * @param ID
+     * 			ID du servomoteur
+     */
     public ServoMoteur(SerialRPi liaison, char ID) throws Exception {
         if((ID >= 0) && (ID <= 253))
             IDServo = ID;
@@ -37,14 +46,38 @@ public abstract class ServoMoteur {
         serialPi = liaison;
     }
     
+    /**
+     * Methode de controle pour savoir si l'angle du servomoteur est correct
+     * 
+     * @param w_angle
+     * 				angle du servomoteur
+     * 
+     * @return 1 si l'angle est correct, 0 sinon
+     */
     protected static boolean testAngle(char w_angle) {
         return ((w_angle >= 0) && (w_angle <= 1023));
     }
     
+    /**
+     * Methode de controle pour savoir si la vitesse du servomoteur est correct
+     * 
+     * @param w_vitesse
+     * 				vitesse du servomoteur
+     * 
+     * @return 1 si la vitesse est correct, 0 sinon
+     */
     protected static boolean testVitesse(char w_vitesse) {
         return ((w_vitesse >= 0) && (w_vitesse <= 1023));
     }
     
+    /**
+     * Methode permettant de calculer le CRC d'une trame
+     * 
+     * @param data
+     * 			Trame de data a envoyer au servomoteur
+     * 
+     * @return le CRC de la trame
+     */
     protected static char CalcCRC(char[] data) {
         int len = data[3] + 2;
         byte crc = 0;
@@ -55,6 +88,12 @@ public abstract class ServoMoteur {
         return (char)((0xFF - crc) & 0xFF);
     }
     
+    /**
+     * Methode de positionnement du servomoteur
+     * 
+     * @param angleFinal
+     * 			angle du servomoteur
+     */
     public void setPosition(char angleFinal) throws Exception {
         if(!testAngle(angleFinal))
             throw new Exception("Erreur angle servomoteur");
@@ -75,6 +114,15 @@ public abstract class ServoMoteur {
         serialPi.send(data, 9);
     }
     
+    /**
+     * Methode de positionnement du servomoteur a une vitesse precise
+     * 
+     * @param angleFinal
+     * 			angle du servomoteur
+     * 
+     * @param vitesse
+     * 			vitesse du servomoteur
+     */
     public abstract void setPositionExtrapol(char angle, char vitesse) throws Exception;
     
 }

@@ -32,7 +32,9 @@ import robot.Robot;
 public class WebSocketRobot extends Thread {
 	private static boolean clientConnected;
 
-	// Thread gestion websocket jetty
+	/**
+	 * Thread gestion Websocket Jetty
+	 */
 	public void run() {
 		clientConnected = false;
         Server server = new Server(3842);
