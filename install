@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# creation dans dossier
-mkdir /usr/local/bin/
-
-mkdir /usr/lib/libowpij/
-cp ../lib/*.jar /usr/lib/libowpij/

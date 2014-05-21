@@ -24,7 +24,6 @@ import com.pi4j.io.gpio.RaspiPin;
 
 import java.lang.Math;
 import java.util.Timer;
-//import java.util.TimerTask;
 
 import robot.PeriodicUpdateTask;
 import stdrpi.SerialRPi;
@@ -193,12 +192,12 @@ public class Robot {
 	    		
 	    		if(w_z > 0)
 	    		{
-	    			w_phiCIR = -90;
+	    			w_phiCIR = 90;
 	    			w_signJoyLeft = -1;
 	    		}
 	    		else
 	    		{
-	    			w_phiCIR = 90;
+	    			w_phiCIR = -90;
 	    			w_signJoyLeft = 1;
 	    		}
 	    		
