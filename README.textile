@@ -1,13 +1,15 @@
 OVPiPod
-=======
+=================
 
-Programme hexapod TrossenRobotics
+Programme OVPiPod pour hexapod TrossenRobotics (PhantomX AX Hexapod Mark II)
+
+"Lien vers la video de demonstration":https://www.youtube.com/watch?v=nF2qZWgQw-A
 
 !http://www.overware.fr/images/mecanique/PhantomX_AX_Mark_II/PhantomX_AX_Hexapod_Mark_II.jpg!
 
 h2. Installation
 
-L'installation peut être effectué sur un Raspberry Pi faisant tourner Raspbian.
+L'installation peut être effectuée sur un Raspberry Pi faisant tourner Raspbian.
 
 
 h3. Paquets nécessaires
@@ -21,14 +23,14 @@ h3. Paramétrage de l'interface série
 
 Plusieurs fichiers sont à modifier.
 
-Par defaut, l'horloge de l'uart du Raspberry Pi est initialisé à 3000000 (3MHz), ce qui
+Par defaut, l'horloge de l'uart du Raspberry Pi est initialisée à 3000000 (3MHz), ce qui
 est insuffisant pour contrôler les servomoteurs Dynamixels.
 
 Il faut donc l'initialiser à 16000000 (16MHz) en rajoutant dans le fichier `/boot/config.txt`
 
 @init_uart_clock=16000000@
 
-Ensuite il faut retirer toutes les options mentionnant ttyAMA0 du fichier `/boot/cmdline.txt`,
+Ensuite il faut retirer toutes les options mentionnants ttyAMA0 du fichier `/boot/cmdline.txt`,
 pour ne pas initialiser la mauvaise vitesse.
 
 exemple :
@@ -62,10 +64,10 @@ h3. Configuration du Raspberry Pi en Hotspot wifi
 Voir la manipulation à l'adresse suivante : "elinux RPI Wireless Hotspot":http://elinux.org/RPI-Wireless-Hotspot
 
 Pour la configuration de HostAPD, il faut nécessairement configurer le wifi en norme n,
-en rajoutant :
+en rajoutant à la fin de votre fichier de configuration :
 
-@ieee80211n=1
-wmm_enabled=1@
+@ieee80211n=1@
+@wmm_enabled=1@
 
 
 h3. Installation du programme

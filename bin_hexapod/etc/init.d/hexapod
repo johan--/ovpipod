@@ -12,13 +12,9 @@
 
 # Author: Jeremy HERGAULT <jeremy.hergault@orange.fr>
 
-# PATH should only include /usr/* if it runs after the mountnfs.sh script
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 PATHPOD=/usr/local/bin/hexapod
 DESC="Controle heaxpod"
 NAME=hexapod
-DAEMON_ARGS="--options args"
-PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 SCREEN=hexapod
 SCREENCAM=streamcam
